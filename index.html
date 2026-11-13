@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#131A2A">
+<title>Huddle 25</title>
+<style>
+:root{--bg:#F4F5F7;--card:#fff;--ink:#131A2A;--muted:#667085;--line:#E4E7EC;--soft:#F0F2F5;
+--ok:#1E9E57;--warn:#B76E00;--err:#C0392B;
+--g1:#C0392B;--g1s:#FBEAE7;--g2:#2471A3;--g2s:#E6F0F8;--g3:#1E8449;--g3s:#E5F4EB;--g4:#F1C40F;--g4s:#FDF6D8;--g4t:#6B5300}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3{margin:0;line-height:1.2}
+.mark{display:grid;grid-template-columns:1fr 1fr;gap:2px;width:28px;height:28px;border-radius:7px;overflow:hidden;flex:none}
+.mark i{display:block}.mark i:nth-child(1){background:var(--g1)}.mark i:nth-child(2){background:var(--g2)}.mark i:nth-child(3){background:var(--g4)}.mark i:nth-child(4){background:var(--g3)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.02em}
+.brand small{display:block;font-weight:500;color:var(--muted);font-size:12px;letter-spacing:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--soft)}.btn.primary{background:var(--ink);border-color:var(--ink);color:#fff}.btn.primary:hover{background:#263148}
+.btn.danger{background:var(--err);border-color:var(--err);color:#fff}.btn.sm{padding:4px 10px;font-size:13px}.btn.big{padding:14px 20px;font-size:17px;width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+input,select{border:1px solid var(--line);border-radius:9px;padding:8px 11px;background:#fff;min-width:0}
+input:focus,select:focus,.btn:focus-visible{outline:2px solid #6C8CFF;outline-offset:1px}
+.gb{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:2px 10px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.gb::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.gb.g1{background:var(--g1s);color:var(--g1)}.gb.g2{background:var(--g2s);color:var(--g2)}.gb.g3{background:var(--g3s);color:var(--g3)}.gb.g4{background:var(--g4s);color:var(--g4t)}.gb.g4::before{background:var(--g4)}
+.chip{display:inline-block;border-radius:99px;padding:2px 9px;font-size:12px;font-weight:700;background:var(--soft);color:var(--muted)}
+.chip.ok{background:#E5F4EB;color:var(--ok)}.chip.warn{background:#FFF1D6;color:var(--warn)}.chip.err{background:#FBEAE7;color:var(--err)}.chip.live{background:var(--ok);color:#fff}
+/* admin layout */
+.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top-in{max-width:1180px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.tabs{display:flex;gap:2px;flex:1;overflow-x:auto}
+.tabs button{border:0;background:none;padding:8px 12px;border-radius:8px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--soft);color:var(--ink)}
+.who{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:10px}
+main{max-width:1180px;margin:0 auto;padding:20px 18px 60px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.bar .grow{flex:1;min-width:180px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.stat{border-top:4px solid var(--line)}.stat.g1{border-top-color:var(--g1)}.stat.g2{border-top-color:var(--g2)}.stat.g3{border-top-color:var(--g3)}.stat.g4{border-top-color:var(--g4)}
+.stat b{display:block;font-size:28px;font-weight:800;line-height:1.1;margin-top:4px}.stat span{font-size:12.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}.stat small{color:var(--muted)}
+.card h2{font-size:16px;margin-bottom:12px}.sec{margin-bottom:18px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{position:sticky;top:0;background:#FAFBFC;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid var(--soft);vertical-align:middle}tr:last-child td{border-bottom:0}tbody tr:hover{background:#FAFBFC}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}td.c,th.c{text-align:center}
+.mono{font-variant-numeric:tabular-nums;font-weight:600}
+.empty{text-align:center;color:var(--muted);padding:38px 16px}.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+.prog{height:8px;border-radius:9px;background:var(--soft);overflow:hidden;min-width:90px}.prog i{display:block;height:100%;background:var(--ok)}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--soft);flex-wrap:wrap}.row:last-child{border:0}.row .grow{flex:1;min-width:160px}
+.sub{color:var(--muted);font-size:13px}
+.linkbox{display:flex;gap:8px}.linkbox input{flex:1;font-size:13px;color:var(--muted)}
+.note{background:#FFF8E6;border:1px solid #F3DFA8;border-radius:10px;padding:10px 12px;font-size:13.5px;margin:10px 0}
+.note.err{background:#FBEAE7;border-color:#F0C4BD}
+/* dialogs + toasts */
+.modal{position:fixed;inset:0;background:rgba(19,26,42,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal-box{background:#fff;border-radius:16px;padding:22px;width:100%;max-width:520px;max-height:92vh;overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.modal-box.wide{max-width:760px}.modal-box h3{font-size:18px;margin-bottom:12px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.modal-err{color:var(--err);font-weight:600;margin:10px 0 0}
+.fg{display:grid;gap:10px;grid-template-columns:1fr 1fr}.fg label,.fl{display:grid;gap:4px;font-size:12.5px;font-weight:600;color:var(--muted)}.fg .full{grid-column:1/-1}
+.grid4{display:grid;grid-template-columns:auto repeat(4,1fr);gap:6px;align-items:center;font-size:13px}
+#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;display:grid;gap:8px;z-index:60;width:min(92vw,420px)}
+.toast{background:var(--ink);color:#fff;border-radius:11px;padding:11px 14px;font-weight:600;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}.toast.err{background:var(--err)}.toast.ok{background:var(--ok)}
+/* sign-in + scanner */
+.center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px;width:100%;max-width:400px;text-align:center}
+.panel .brand{justify-content:center;font-size:22px;margin-bottom:6px}.panel p{color:var(--muted)}.panel input{width:100%;margin:10px 0;padding:12px;font-size:16px;text-align:center}
+.sc{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:#fff}
+.sc-top{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.sc-list{padding:14px 16px;display:grid;gap:10px}.sc-list h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:8px}
+.ses{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid var(--line);border-left:8px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;cursor:pointer;width:100%}
+.ses.g1{border-left-color:var(--g1)}.ses.g2{border-left-color:var(--g2)}.ses.g3{border-left-color:var(--g3)}.ses.g4{border-left-color:var(--g4)}
+.ses b{display:block;font-size:16px}.ses .grow{flex:1}.ses.closed{opacity:.5}
+.sc-head{display:flex;align-items:center;gap:10px;padding:10px 12px;color:#fff}.sc-head.g1{background:var(--g1)}.sc-head.g2{background:var(--g2)}.sc-head.g3{background:var(--g3)}.sc-head.g4{background:var(--g4);color:#2A2200}
+.sc-head button{border:0;background:rgba(255,255,255,.22);color:inherit;border-radius:9px;padding:8px 12px;font-weight:700;cursor:pointer}
+.sc-head .grow{flex:1;min-width:0}.sc-head b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sc-head small{opacity:.9}
+.sc-head .tag{font-weight:800;font-size:13px;border:2px solid currentColor;border-radius:8px;padding:3px 8px;white-space:nowrap}
+.cam{position:relative;background:#000;aspect-ratio:1/1;max-height:46vh;overflow:hidden}.cam video{width:100%;height:100%;object-fit:cover;display:block}
+.cam .msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;text-align:center;padding:20px;font-weight:600}
+.res{margin:10px 12px 0;border-radius:14px;padding:14px 16px;min-height:104px;display:flex;align-items:center;gap:14px;background:var(--soft);color:var(--muted);font-weight:600}
+.res .ico{font-size:38px;line-height:1;flex:none}.res .grow{flex:1;min-width:0}.res .big{font-size:26px;font-weight:800;line-height:1.1;color:inherit}.res .nm{font-size:15px;font-weight:600}.res .why{font-size:14px;font-weight:700;margin-top:2px}
+.res.ok.g1{background:var(--g1);color:#fff}.res.ok.g2{background:var(--g2);color:#fff}.res.ok.g3{background:var(--g3);color:#fff}.res.ok.g4{background:var(--g4);color:#2A2200}
+.res.dup{background:#FFE7B3;color:#5C3A00}.res.wrong{background:#3B1E6E;color:#fff}.res.bad{background:#FBD9D3;color:#7A1B10}
+.res .acts{display:flex;gap:8px;margin-top:8px}.res .acts .btn{color:var(--ink)}
+.sc-stats{display:flex;justify-content:space-between;align-items:baseline;padding:10px 16px 4px;font-weight:600;color:var(--muted)}.sc-stats b{font-size:22px;color:var(--ink)}
+.manual{display:flex;gap:8px;padding:6px 12px}.manual input{flex:1;font-size:16px}
+.recent{padding:4px 16px 24px}.recent .row{padding:7px 0}
+@media(max-width:640px){.fg{grid-template-columns:1fr}.who span{display:none}main{padding:14px 12px 50px}}
+
+</style>
+</head>
+<body>
+<div id="app"><div class="center"><div class="panel" id="bootMsg">Loading Huddle 25…</div></div></div>
+<div id="toasts"></div>
+<script>
+// If the app has not started after 15 s (no internet, blocked script), say so instead of a blank page.
+setTimeout(function () { var m = document.getElementById('bootMsg'); if (m && !window.__h25ready) m.innerHTML = '<b>Could not load.</b><br>Check the internet connection and reload this page.'; }, 15000);
+</script>
+<script>
+/* QR scanning library: qr-scanner 1.4.2 by Nimiq (MIT licence), included here so the page is a single file. */
+window.__h25QrWorker=()=>new Worker(URL.createObjectURL(new Blob([`class x{constructor(a,b){this.width=b;this.height=a.length/b;this.data=a}static createEmpty(a,b){return new x(new Uint8ClampedArray(a*b),a)}get(a,b){return 0>a||a>=this.width||0>b||b>=this.height?!1:!!this.data[b*this.width+a]}set(a,b,c){this.data[b*this.width+a]=c?1:0}setRegion(a,b,c,d,e){for(let f=b;f<b+d;f++)for(let g=a;g<a+c;g++)this.set(g,f,!!e)}}
+class A{constructor(a,b,c){this.width=a;a*=b;if(c&&c.length!==a)throw Error("Wrong buffer size");this.data=c||new Uint8ClampedArray(a)}get(a,b){return this.data[b*this.width+a]}set(a,b,c){this.data[b*this.width+a]=c}}
+class ba{constructor(a){this.bitOffset=this.byteOffset=0;this.bytes=a}readBits(a){if(1>a||32<a||a>this.available())throw Error("Cannot read "+a.toString()+" bits");var b=0;if(0<this.bitOffset){b=8-this.bitOffset;var c=a<b?a:b;b-=c;b=(this.bytes[this.byteOffset]&255>>8-c<<b)>>b;a-=c;this.bitOffset+=c;8===this.bitOffset&&(this.bitOffset=0,this.byteOffset++)}if(0<a){for(;8<=a;)b=b<<8|this.bytes[this.byteOffset]&255,this.byteOffset++,a-=8;0<a&&(c=8-a,b=b<<a|(this.bytes[this.byteOffset]&255>>c<<c)>>c,
+this.bitOffset+=a)}return b}available(){return 8*(this.bytes.length-this.byteOffset)-this.bitOffset}}var B,C=B||(B={});C.Numeric="numeric";C.Alphanumeric="alphanumeric";C.Byte="byte";C.Kanji="kanji";C.ECI="eci";C.StructuredAppend="structuredappend";var D,E=D||(D={});E[E.Terminator=0]="Terminator";E[E.Numeric=1]="Numeric";E[E.Alphanumeric=2]="Alphanumeric";E[E.Byte=4]="Byte";E[E.Kanji=8]="Kanji";E[E.ECI=7]="ECI";E[E.StructuredAppend=3]="StructuredAppend";let F="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:".split("");
+function ca(a,b){let c=[],d="";b=a.readBits([8,16,16][b]);for(let e=0;e<b;e++){let f=a.readBits(8);c.push(f)}try{d+=decodeURIComponent(c.map(e=>\`%\${("0"+e.toString(16)).substr(-2)}\`).join(""))}catch(e){}return{bytes:c,text:d}}
+function da(a,b){a=new ba(a);let c=9>=b?0:26>=b?1:2;for(b={text:"",bytes:[],chunks:[],version:b};4<=a.available();){var d=a.readBits(4);if(d===D.Terminator)return b;if(d===D.ECI)0===a.readBits(1)?b.chunks.push({type:B.ECI,assignmentNumber:a.readBits(7)}):0===a.readBits(1)?b.chunks.push({type:B.ECI,assignmentNumber:a.readBits(14)}):0===a.readBits(1)?b.chunks.push({type:B.ECI,assignmentNumber:a.readBits(21)}):b.chunks.push({type:B.ECI,assignmentNumber:-1});else if(d===D.Numeric){var e=a,f=[];d="";for(var g=
+e.readBits([10,12,14][c]);3<=g;){var h=e.readBits(10);if(1E3<=h)throw Error("Invalid numeric value above 999");var k=Math.floor(h/100),m=Math.floor(h/10)%10;h%=10;f.push(48+k,48+m,48+h);d+=k.toString()+m.toString()+h.toString();g-=3}if(2===g){g=e.readBits(7);if(100<=g)throw Error("Invalid numeric value above 99");e=Math.floor(g/10);g%=10;f.push(48+e,48+g);d+=e.toString()+g.toString()}else if(1===g){e=e.readBits(4);if(10<=e)throw Error("Invalid numeric value above 9");f.push(48+e);d+=e.toString()}b.text+=
+d;b.bytes.push(...f);b.chunks.push({type:B.Numeric,text:d})}else if(d===D.Alphanumeric){e=a;f=[];d="";for(g=e.readBits([9,11,13][c]);2<=g;)m=e.readBits(11),k=Math.floor(m/45),m%=45,f.push(F[k].charCodeAt(0),F[m].charCodeAt(0)),d+=F[k]+F[m],g-=2;1===g&&(e=e.readBits(6),f.push(F[e].charCodeAt(0)),d+=F[e]);b.text+=d;b.bytes.push(...f);b.chunks.push({type:B.Alphanumeric,text:d})}else if(d===D.Byte)d=ca(a,c),b.text+=d.text,b.bytes.push(...d.bytes),b.chunks.push({type:B.Byte,bytes:d.bytes,text:d.text});
+else if(d===D.Kanji){f=a;d=[];e=f.readBits([8,10,12][c]);for(g=0;g<e;g++)k=f.readBits(13),k=Math.floor(k/192)<<8|k%192,k=7936>k?k+33088:k+49472,d.push(k>>8,k&255);f=(new TextDecoder("shift-jis")).decode(Uint8Array.from(d));b.text+=f;b.bytes.push(...d);b.chunks.push({type:B.Kanji,bytes:d,text:f})}else d===D.StructuredAppend&&b.chunks.push({type:B.StructuredAppend,currentSequence:a.readBits(4),totalSequence:a.readBits(4),parity:a.readBits(8)})}if(0===a.available()||0===a.readBits(a.available()))return b}
+class G{constructor(a,b){if(0===b.length)throw Error("No coefficients.");this.field=a;let c=b.length;if(1<c&&0===b[0]){let d=1;for(;d<c&&0===b[d];)d++;if(d===c)this.coefficients=a.zero.coefficients;else for(this.coefficients=new Uint8ClampedArray(c-d),a=0;a<this.coefficients.length;a++)this.coefficients[a]=b[d+a]}else this.coefficients=b}degree(){return this.coefficients.length-1}isZero(){return 0===this.coefficients[0]}getCoefficient(a){return this.coefficients[this.coefficients.length-1-a]}addOrSubtract(a){if(this.isZero())return a;
+if(a.isZero())return this;let b=this.coefficients;a=a.coefficients;b.length>a.length&&([b,a]=[a,b]);let c=new Uint8ClampedArray(a.length),d=a.length-b.length;for(var e=0;e<d;e++)c[e]=a[e];for(e=d;e<a.length;e++)c[e]=b[e-d]^a[e];return new G(this.field,c)}multiply(a){if(0===a)return this.field.zero;if(1===a)return this;let b=this.coefficients.length,c=new Uint8ClampedArray(b);for(let d=0;d<b;d++)c[d]=this.field.multiply(this.coefficients[d],a);return new G(this.field,c)}multiplyPoly(a){if(this.isZero()||
+a.isZero())return this.field.zero;let b=this.coefficients,c=b.length;a=a.coefficients;let d=a.length,e=new Uint8ClampedArray(c+d-1);for(let f=0;f<c;f++){let g=b[f];for(let h=0;h<d;h++)e[f+h]=H(e[f+h],this.field.multiply(g,a[h]))}return new G(this.field,e)}multiplyByMonomial(a,b){if(0>a)throw Error("Invalid degree less than 0");if(0===b)return this.field.zero;let c=this.coefficients.length;a=new Uint8ClampedArray(c+a);for(let d=0;d<c;d++)a[d]=this.field.multiply(this.coefficients[d],b);return new G(this.field,
+a)}evaluateAt(a){let b=0;if(0===a)return this.getCoefficient(0);let c=this.coefficients.length;if(1===a)return this.coefficients.forEach(d=>{b^=d}),b;b=this.coefficients[0];for(let d=1;d<c;d++)b=H(this.field.multiply(a,b),this.coefficients[d]);return b}}function H(a,b){return a^b}
+class ea{constructor(a,b,c){this.primitive=a;this.size=b;this.generatorBase=c;this.expTable=Array(this.size);this.logTable=Array(this.size);a=1;for(b=0;b<this.size;b++)this.expTable[b]=a,a*=2,a>=this.size&&(a=(a^this.primitive)&this.size-1);for(a=0;a<this.size-1;a++)this.logTable[this.expTable[a]]=a;this.zero=new G(this,Uint8ClampedArray.from([0]));this.one=new G(this,Uint8ClampedArray.from([1]))}multiply(a,b){return 0===a||0===b?0:this.expTable[(this.logTable[a]+this.logTable[b])%(this.size-1)]}inverse(a){if(0===
+a)throw Error("Can't invert 0");return this.expTable[this.size-this.logTable[a]-1]}buildMonomial(a,b){if(0>a)throw Error("Invalid monomial degree less than 0");if(0===b)return this.zero;a=new Uint8ClampedArray(a+1);a[0]=b;return new G(this,a)}log(a){if(0===a)throw Error("Can't take log(0)");return this.logTable[a]}exp(a){return this.expTable[a]}}
+function fa(a,b,c,d){b.degree()<c.degree()&&([b,c]=[c,b]);let e=a.zero;for(var f=a.one;c.degree()>=d/2;){var g=b;let h=e;b=c;e=f;if(b.isZero())return null;c=g;f=a.zero;g=b.getCoefficient(b.degree());for(g=a.inverse(g);c.degree()>=b.degree()&&!c.isZero();){let k=c.degree()-b.degree(),m=a.multiply(c.getCoefficient(c.degree()),g);f=f.addOrSubtract(a.buildMonomial(k,m));c=c.addOrSubtract(b.multiplyByMonomial(k,m))}f=f.multiplyPoly(e).addOrSubtract(h);if(c.degree()>=b.degree())return null}d=f.getCoefficient(0);
+if(0===d)return null;a=a.inverse(d);return[f.multiply(a),c.multiply(a)]}
+function ha(a,b){let c=new Uint8ClampedArray(a.length);c.set(a);a=new ea(285,256,0);var d=new G(a,c),e=new Uint8ClampedArray(b),f=!1;for(var g=0;g<b;g++){var h=d.evaluateAt(a.exp(g+a.generatorBase));e[e.length-1-g]=h;0!==h&&(f=!0)}if(!f)return c;d=new G(a,e);d=fa(a,a.buildMonomial(b,1),d,b);if(null===d)return null;b=d[0];g=b.degree();if(1===g)b=[b.getCoefficient(1)];else{e=Array(g);f=0;for(h=1;h<a.size&&f<g;h++)0===b.evaluateAt(h)&&(e[f]=a.inverse(h),f++);b=f!==g?null:e}if(null==b)return null;e=d[1];
+f=b.length;d=Array(f);for(g=0;g<f;g++){h=a.inverse(b[g]);let k=1;for(let m=0;m<f;m++)g!==m&&(k=a.multiply(k,H(1,a.multiply(b[m],h))));d[g]=a.multiply(e.evaluateAt(h),a.inverse(k));0!==a.generatorBase&&(d[g]=a.multiply(d[g],h))}for(e=0;e<b.length;e++){f=c.length-1-a.log(b[e]);if(0>f)return null;c[f]^=d[e]}return c}
+let I=[{infoBits:null,versionNumber:1,alignmentPatternCenters:[],errorCorrectionLevels:[{ecCodewordsPerBlock:7,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:19}]},{ecCodewordsPerBlock:10,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:16}]},{ecCodewordsPerBlock:13,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:13}]},{ecCodewordsPerBlock:17,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:9}]}]},{infoBits:null,versionNumber:2,alignmentPatternCenters:[6,18],errorCorrectionLevels:[{ecCodewordsPerBlock:10,ecBlocks:[{numBlocks:1,
+dataCodewordsPerBlock:34}]},{ecCodewordsPerBlock:16,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:28}]},{ecCodewordsPerBlock:22,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:22}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:16}]}]},{infoBits:null,versionNumber:3,alignmentPatternCenters:[6,22],errorCorrectionLevels:[{ecCodewordsPerBlock:15,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:55}]},{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:44}]},{ecCodewordsPerBlock:18,
+ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:17}]},{ecCodewordsPerBlock:22,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:13}]}]},{infoBits:null,versionNumber:4,alignmentPatternCenters:[6,26],errorCorrectionLevels:[{ecCodewordsPerBlock:20,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:80}]},{ecCodewordsPerBlock:18,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:32}]},{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:24}]},{ecCodewordsPerBlock:16,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:9}]}]},
+{infoBits:null,versionNumber:5,alignmentPatternCenters:[6,30],errorCorrectionLevels:[{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:108}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:43}]},{ecCodewordsPerBlock:18,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:15},{numBlocks:2,dataCodewordsPerBlock:16}]},{ecCodewordsPerBlock:22,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:11},{numBlocks:2,dataCodewordsPerBlock:12}]}]},{infoBits:null,versionNumber:6,alignmentPatternCenters:[6,
+34],errorCorrectionLevels:[{ecCodewordsPerBlock:18,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:68}]},{ecCodewordsPerBlock:16,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:27}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:19}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:15}]}]},{infoBits:31892,versionNumber:7,alignmentPatternCenters:[6,22,38],errorCorrectionLevels:[{ecCodewordsPerBlock:20,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:78}]},{ecCodewordsPerBlock:18,
+ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:31}]},{ecCodewordsPerBlock:18,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:14},{numBlocks:4,dataCodewordsPerBlock:15}]},{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:13},{numBlocks:1,dataCodewordsPerBlock:14}]}]},{infoBits:34236,versionNumber:8,alignmentPatternCenters:[6,24,42],errorCorrectionLevels:[{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:97}]},{ecCodewordsPerBlock:22,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:38},
+{numBlocks:2,dataCodewordsPerBlock:39}]},{ecCodewordsPerBlock:22,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:18},{numBlocks:2,dataCodewordsPerBlock:19}]},{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:14},{numBlocks:2,dataCodewordsPerBlock:15}]}]},{infoBits:39577,versionNumber:9,alignmentPatternCenters:[6,26,46],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:116}]},{ecCodewordsPerBlock:22,ecBlocks:[{numBlocks:3,dataCodewordsPerBlock:36},
+{numBlocks:2,dataCodewordsPerBlock:37}]},{ecCodewordsPerBlock:20,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:16},{numBlocks:4,dataCodewordsPerBlock:17}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:12},{numBlocks:4,dataCodewordsPerBlock:13}]}]},{infoBits:42195,versionNumber:10,alignmentPatternCenters:[6,28,50],errorCorrectionLevels:[{ecCodewordsPerBlock:18,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:68},{numBlocks:2,dataCodewordsPerBlock:69}]},{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:4,
+dataCodewordsPerBlock:43},{numBlocks:1,dataCodewordsPerBlock:44}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:6,dataCodewordsPerBlock:19},{numBlocks:2,dataCodewordsPerBlock:20}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:6,dataCodewordsPerBlock:15},{numBlocks:2,dataCodewordsPerBlock:16}]}]},{infoBits:48118,versionNumber:11,alignmentPatternCenters:[6,30,54],errorCorrectionLevels:[{ecCodewordsPerBlock:20,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:81}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:1,
+dataCodewordsPerBlock:50},{numBlocks:4,dataCodewordsPerBlock:51}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:22},{numBlocks:4,dataCodewordsPerBlock:23}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:3,dataCodewordsPerBlock:12},{numBlocks:8,dataCodewordsPerBlock:13}]}]},{infoBits:51042,versionNumber:12,alignmentPatternCenters:[6,32,58],errorCorrectionLevels:[{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:92},{numBlocks:2,dataCodewordsPerBlock:93}]},
+{ecCodewordsPerBlock:22,ecBlocks:[{numBlocks:6,dataCodewordsPerBlock:36},{numBlocks:2,dataCodewordsPerBlock:37}]},{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:20},{numBlocks:6,dataCodewordsPerBlock:21}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:7,dataCodewordsPerBlock:14},{numBlocks:4,dataCodewordsPerBlock:15}]}]},{infoBits:55367,versionNumber:13,alignmentPatternCenters:[6,34,62],errorCorrectionLevels:[{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:107}]},
+{ecCodewordsPerBlock:22,ecBlocks:[{numBlocks:8,dataCodewordsPerBlock:37},{numBlocks:1,dataCodewordsPerBlock:38}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:8,dataCodewordsPerBlock:20},{numBlocks:4,dataCodewordsPerBlock:21}]},{ecCodewordsPerBlock:22,ecBlocks:[{numBlocks:12,dataCodewordsPerBlock:11},{numBlocks:4,dataCodewordsPerBlock:12}]}]},{infoBits:58893,versionNumber:14,alignmentPatternCenters:[6,26,46,66],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:3,dataCodewordsPerBlock:115},
+{numBlocks:1,dataCodewordsPerBlock:116}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:40},{numBlocks:5,dataCodewordsPerBlock:41}]},{ecCodewordsPerBlock:20,ecBlocks:[{numBlocks:11,dataCodewordsPerBlock:16},{numBlocks:5,dataCodewordsPerBlock:17}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:11,dataCodewordsPerBlock:12},{numBlocks:5,dataCodewordsPerBlock:13}]}]},{infoBits:63784,versionNumber:15,alignmentPatternCenters:[6,26,48,70],errorCorrectionLevels:[{ecCodewordsPerBlock:22,
+ecBlocks:[{numBlocks:5,dataCodewordsPerBlock:87},{numBlocks:1,dataCodewordsPerBlock:88}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:5,dataCodewordsPerBlock:41},{numBlocks:5,dataCodewordsPerBlock:42}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:5,dataCodewordsPerBlock:24},{numBlocks:7,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:11,dataCodewordsPerBlock:12},{numBlocks:7,dataCodewordsPerBlock:13}]}]},{infoBits:68472,versionNumber:16,alignmentPatternCenters:[6,26,50,
+74],errorCorrectionLevels:[{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:5,dataCodewordsPerBlock:98},{numBlocks:1,dataCodewordsPerBlock:99}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:7,dataCodewordsPerBlock:45},{numBlocks:3,dataCodewordsPerBlock:46}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:15,dataCodewordsPerBlock:19},{numBlocks:2,dataCodewordsPerBlock:20}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:3,dataCodewordsPerBlock:15},{numBlocks:13,dataCodewordsPerBlock:16}]}]},{infoBits:70749,
+versionNumber:17,alignmentPatternCenters:[6,30,54,78],errorCorrectionLevels:[{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:107},{numBlocks:5,dataCodewordsPerBlock:108}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:10,dataCodewordsPerBlock:46},{numBlocks:1,dataCodewordsPerBlock:47}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:22},{numBlocks:15,dataCodewordsPerBlock:23}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:14},{numBlocks:17,
+dataCodewordsPerBlock:15}]}]},{infoBits:76311,versionNumber:18,alignmentPatternCenters:[6,30,56,82],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:5,dataCodewordsPerBlock:120},{numBlocks:1,dataCodewordsPerBlock:121}]},{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:9,dataCodewordsPerBlock:43},{numBlocks:4,dataCodewordsPerBlock:44}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:17,dataCodewordsPerBlock:22},{numBlocks:1,dataCodewordsPerBlock:23}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:2,
+dataCodewordsPerBlock:14},{numBlocks:19,dataCodewordsPerBlock:15}]}]},{infoBits:79154,versionNumber:19,alignmentPatternCenters:[6,30,58,86],errorCorrectionLevels:[{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:3,dataCodewordsPerBlock:113},{numBlocks:4,dataCodewordsPerBlock:114}]},{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:3,dataCodewordsPerBlock:44},{numBlocks:11,dataCodewordsPerBlock:45}]},{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:17,dataCodewordsPerBlock:21},{numBlocks:4,dataCodewordsPerBlock:22}]},
+{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:9,dataCodewordsPerBlock:13},{numBlocks:16,dataCodewordsPerBlock:14}]}]},{infoBits:84390,versionNumber:20,alignmentPatternCenters:[6,34,62,90],errorCorrectionLevels:[{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:3,dataCodewordsPerBlock:107},{numBlocks:5,dataCodewordsPerBlock:108}]},{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:3,dataCodewordsPerBlock:41},{numBlocks:13,dataCodewordsPerBlock:42}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:15,dataCodewordsPerBlock:24},
+{numBlocks:5,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:15,dataCodewordsPerBlock:15},{numBlocks:10,dataCodewordsPerBlock:16}]}]},{infoBits:87683,versionNumber:21,alignmentPatternCenters:[6,28,50,72,94],errorCorrectionLevels:[{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:116},{numBlocks:4,dataCodewordsPerBlock:117}]},{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:17,dataCodewordsPerBlock:42}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:17,dataCodewordsPerBlock:22},
+{numBlocks:6,dataCodewordsPerBlock:23}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:19,dataCodewordsPerBlock:16},{numBlocks:6,dataCodewordsPerBlock:17}]}]},{infoBits:92361,versionNumber:22,alignmentPatternCenters:[6,26,50,74,98],errorCorrectionLevels:[{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:111},{numBlocks:7,dataCodewordsPerBlock:112}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:17,dataCodewordsPerBlock:46}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:7,dataCodewordsPerBlock:24},
+{numBlocks:16,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:24,ecBlocks:[{numBlocks:34,dataCodewordsPerBlock:13}]}]},{infoBits:96236,versionNumber:23,alignmentPatternCenters:[6,30,54,74,102],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:121},{numBlocks:5,dataCodewordsPerBlock:122}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:47},{numBlocks:14,dataCodewordsPerBlock:48}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:11,dataCodewordsPerBlock:24},
+{numBlocks:14,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:16,dataCodewordsPerBlock:15},{numBlocks:14,dataCodewordsPerBlock:16}]}]},{infoBits:102084,versionNumber:24,alignmentPatternCenters:[6,28,54,80,106],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:6,dataCodewordsPerBlock:117},{numBlocks:4,dataCodewordsPerBlock:118}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:6,dataCodewordsPerBlock:45},{numBlocks:14,dataCodewordsPerBlock:46}]},{ecCodewordsPerBlock:30,
+ecBlocks:[{numBlocks:11,dataCodewordsPerBlock:24},{numBlocks:16,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:30,dataCodewordsPerBlock:16},{numBlocks:2,dataCodewordsPerBlock:17}]}]},{infoBits:102881,versionNumber:25,alignmentPatternCenters:[6,32,58,84,110],errorCorrectionLevels:[{ecCodewordsPerBlock:26,ecBlocks:[{numBlocks:8,dataCodewordsPerBlock:106},{numBlocks:4,dataCodewordsPerBlock:107}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:8,dataCodewordsPerBlock:47},{numBlocks:13,
+dataCodewordsPerBlock:48}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:7,dataCodewordsPerBlock:24},{numBlocks:22,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:22,dataCodewordsPerBlock:15},{numBlocks:13,dataCodewordsPerBlock:16}]}]},{infoBits:110507,versionNumber:26,alignmentPatternCenters:[6,30,58,86,114],errorCorrectionLevels:[{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:10,dataCodewordsPerBlock:114},{numBlocks:2,dataCodewordsPerBlock:115}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:19,
+dataCodewordsPerBlock:46},{numBlocks:4,dataCodewordsPerBlock:47}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:28,dataCodewordsPerBlock:22},{numBlocks:6,dataCodewordsPerBlock:23}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:33,dataCodewordsPerBlock:16},{numBlocks:4,dataCodewordsPerBlock:17}]}]},{infoBits:110734,versionNumber:27,alignmentPatternCenters:[6,34,62,90,118],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:8,dataCodewordsPerBlock:122},{numBlocks:4,dataCodewordsPerBlock:123}]},
+{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:22,dataCodewordsPerBlock:45},{numBlocks:3,dataCodewordsPerBlock:46}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:8,dataCodewordsPerBlock:23},{numBlocks:26,dataCodewordsPerBlock:24}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:12,dataCodewordsPerBlock:15},{numBlocks:28,dataCodewordsPerBlock:16}]}]},{infoBits:117786,versionNumber:28,alignmentPatternCenters:[6,26,50,74,98,122],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:3,dataCodewordsPerBlock:117},
+{numBlocks:10,dataCodewordsPerBlock:118}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:3,dataCodewordsPerBlock:45},{numBlocks:23,dataCodewordsPerBlock:46}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:4,dataCodewordsPerBlock:24},{numBlocks:31,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:11,dataCodewordsPerBlock:15},{numBlocks:31,dataCodewordsPerBlock:16}]}]},{infoBits:119615,versionNumber:29,alignmentPatternCenters:[6,30,54,78,102,126],errorCorrectionLevels:[{ecCodewordsPerBlock:30,
+ecBlocks:[{numBlocks:7,dataCodewordsPerBlock:116},{numBlocks:7,dataCodewordsPerBlock:117}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:21,dataCodewordsPerBlock:45},{numBlocks:7,dataCodewordsPerBlock:46}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:1,dataCodewordsPerBlock:23},{numBlocks:37,dataCodewordsPerBlock:24}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:19,dataCodewordsPerBlock:15},{numBlocks:26,dataCodewordsPerBlock:16}]}]},{infoBits:126325,versionNumber:30,alignmentPatternCenters:[6,
+26,52,78,104,130],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:5,dataCodewordsPerBlock:115},{numBlocks:10,dataCodewordsPerBlock:116}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:19,dataCodewordsPerBlock:47},{numBlocks:10,dataCodewordsPerBlock:48}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:15,dataCodewordsPerBlock:24},{numBlocks:25,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:23,dataCodewordsPerBlock:15},{numBlocks:25,dataCodewordsPerBlock:16}]}]},
+{infoBits:127568,versionNumber:31,alignmentPatternCenters:[6,30,56,82,108,134],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:13,dataCodewordsPerBlock:115},{numBlocks:3,dataCodewordsPerBlock:116}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:46},{numBlocks:29,dataCodewordsPerBlock:47}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:42,dataCodewordsPerBlock:24},{numBlocks:1,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:23,dataCodewordsPerBlock:15},
+{numBlocks:28,dataCodewordsPerBlock:16}]}]},{infoBits:133589,versionNumber:32,alignmentPatternCenters:[6,34,60,86,112,138],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:17,dataCodewordsPerBlock:115}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:10,dataCodewordsPerBlock:46},{numBlocks:23,dataCodewordsPerBlock:47}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:10,dataCodewordsPerBlock:24},{numBlocks:35,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:19,
+dataCodewordsPerBlock:15},{numBlocks:35,dataCodewordsPerBlock:16}]}]},{infoBits:136944,versionNumber:33,alignmentPatternCenters:[6,30,58,86,114,142],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:17,dataCodewordsPerBlock:115},{numBlocks:1,dataCodewordsPerBlock:116}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:14,dataCodewordsPerBlock:46},{numBlocks:21,dataCodewordsPerBlock:47}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:29,dataCodewordsPerBlock:24},{numBlocks:19,dataCodewordsPerBlock:25}]},
+{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:11,dataCodewordsPerBlock:15},{numBlocks:46,dataCodewordsPerBlock:16}]}]},{infoBits:141498,versionNumber:34,alignmentPatternCenters:[6,34,62,90,118,146],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:13,dataCodewordsPerBlock:115},{numBlocks:6,dataCodewordsPerBlock:116}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:14,dataCodewordsPerBlock:46},{numBlocks:23,dataCodewordsPerBlock:47}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:44,
+dataCodewordsPerBlock:24},{numBlocks:7,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:59,dataCodewordsPerBlock:16},{numBlocks:1,dataCodewordsPerBlock:17}]}]},{infoBits:145311,versionNumber:35,alignmentPatternCenters:[6,30,54,78,102,126,150],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:12,dataCodewordsPerBlock:121},{numBlocks:7,dataCodewordsPerBlock:122}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:12,dataCodewordsPerBlock:47},{numBlocks:26,dataCodewordsPerBlock:48}]},
+{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:39,dataCodewordsPerBlock:24},{numBlocks:14,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:22,dataCodewordsPerBlock:15},{numBlocks:41,dataCodewordsPerBlock:16}]}]},{infoBits:150283,versionNumber:36,alignmentPatternCenters:[6,24,50,76,102,128,154],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:6,dataCodewordsPerBlock:121},{numBlocks:14,dataCodewordsPerBlock:122}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:6,
+dataCodewordsPerBlock:47},{numBlocks:34,dataCodewordsPerBlock:48}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:46,dataCodewordsPerBlock:24},{numBlocks:10,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:2,dataCodewordsPerBlock:15},{numBlocks:64,dataCodewordsPerBlock:16}]}]},{infoBits:152622,versionNumber:37,alignmentPatternCenters:[6,28,54,80,106,132,158],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:17,dataCodewordsPerBlock:122},{numBlocks:4,dataCodewordsPerBlock:123}]},
+{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:29,dataCodewordsPerBlock:46},{numBlocks:14,dataCodewordsPerBlock:47}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:49,dataCodewordsPerBlock:24},{numBlocks:10,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:24,dataCodewordsPerBlock:15},{numBlocks:46,dataCodewordsPerBlock:16}]}]},{infoBits:158308,versionNumber:38,alignmentPatternCenters:[6,32,58,84,110,136,162],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:4,
+dataCodewordsPerBlock:122},{numBlocks:18,dataCodewordsPerBlock:123}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:13,dataCodewordsPerBlock:46},{numBlocks:32,dataCodewordsPerBlock:47}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:48,dataCodewordsPerBlock:24},{numBlocks:14,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:42,dataCodewordsPerBlock:15},{numBlocks:32,dataCodewordsPerBlock:16}]}]},{infoBits:161089,versionNumber:39,alignmentPatternCenters:[6,26,54,82,110,138,166],
+errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:20,dataCodewordsPerBlock:117},{numBlocks:4,dataCodewordsPerBlock:118}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:40,dataCodewordsPerBlock:47},{numBlocks:7,dataCodewordsPerBlock:48}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:43,dataCodewordsPerBlock:24},{numBlocks:22,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:10,dataCodewordsPerBlock:15},{numBlocks:67,dataCodewordsPerBlock:16}]}]},{infoBits:167017,
+versionNumber:40,alignmentPatternCenters:[6,30,58,86,114,142,170],errorCorrectionLevels:[{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:19,dataCodewordsPerBlock:118},{numBlocks:6,dataCodewordsPerBlock:119}]},{ecCodewordsPerBlock:28,ecBlocks:[{numBlocks:18,dataCodewordsPerBlock:47},{numBlocks:31,dataCodewordsPerBlock:48}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:34,dataCodewordsPerBlock:24},{numBlocks:34,dataCodewordsPerBlock:25}]},{ecCodewordsPerBlock:30,ecBlocks:[{numBlocks:20,dataCodewordsPerBlock:15},
+{numBlocks:61,dataCodewordsPerBlock:16}]}]}];function J(a,b){a^=b;for(b=0;a;)b++,a&=a-1;return b}function K(a,b){return b<<1|a}
+let ia=[{bits:21522,formatInfo:{errorCorrectionLevel:1,dataMask:0}},{bits:20773,formatInfo:{errorCorrectionLevel:1,dataMask:1}},{bits:24188,formatInfo:{errorCorrectionLevel:1,dataMask:2}},{bits:23371,formatInfo:{errorCorrectionLevel:1,dataMask:3}},{bits:17913,formatInfo:{errorCorrectionLevel:1,dataMask:4}},{bits:16590,formatInfo:{errorCorrectionLevel:1,dataMask:5}},{bits:20375,formatInfo:{errorCorrectionLevel:1,dataMask:6}},{bits:19104,formatInfo:{errorCorrectionLevel:1,dataMask:7}},{bits:30660,formatInfo:{errorCorrectionLevel:0,
+dataMask:0}},{bits:29427,formatInfo:{errorCorrectionLevel:0,dataMask:1}},{bits:32170,formatInfo:{errorCorrectionLevel:0,dataMask:2}},{bits:30877,formatInfo:{errorCorrectionLevel:0,dataMask:3}},{bits:26159,formatInfo:{errorCorrectionLevel:0,dataMask:4}},{bits:25368,formatInfo:{errorCorrectionLevel:0,dataMask:5}},{bits:27713,formatInfo:{errorCorrectionLevel:0,dataMask:6}},{bits:26998,formatInfo:{errorCorrectionLevel:0,dataMask:7}},{bits:5769,formatInfo:{errorCorrectionLevel:3,dataMask:0}},{bits:5054,
+formatInfo:{errorCorrectionLevel:3,dataMask:1}},{bits:7399,formatInfo:{errorCorrectionLevel:3,dataMask:2}},{bits:6608,formatInfo:{errorCorrectionLevel:3,dataMask:3}},{bits:1890,formatInfo:{errorCorrectionLevel:3,dataMask:4}},{bits:597,formatInfo:{errorCorrectionLevel:3,dataMask:5}},{bits:3340,formatInfo:{errorCorrectionLevel:3,dataMask:6}},{bits:2107,formatInfo:{errorCorrectionLevel:3,dataMask:7}},{bits:13663,formatInfo:{errorCorrectionLevel:2,dataMask:0}},{bits:12392,formatInfo:{errorCorrectionLevel:2,
+dataMask:1}},{bits:16177,formatInfo:{errorCorrectionLevel:2,dataMask:2}},{bits:14854,formatInfo:{errorCorrectionLevel:2,dataMask:3}},{bits:9396,formatInfo:{errorCorrectionLevel:2,dataMask:4}},{bits:8579,formatInfo:{errorCorrectionLevel:2,dataMask:5}},{bits:11994,formatInfo:{errorCorrectionLevel:2,dataMask:6}},{bits:11245,formatInfo:{errorCorrectionLevel:2,dataMask:7}}],ja=[a=>0===(a.y+a.x)%2,a=>0===a.y%2,a=>0===a.x%3,a=>0===(a.y+a.x)%3,a=>0===(Math.floor(a.y/2)+Math.floor(a.x/3))%2,a=>0===a.x*a.y%
+2+a.x*a.y%3,a=>0===(a.y*a.x%2+a.y*a.x%3)%2,a=>0===((a.y+a.x)%2+a.y*a.x%3)%2];
+function ka(a,b,c){c=ja[c.dataMask];let d=a.height;var e=17+4*b.versionNumber;let f=x.createEmpty(e,e);f.setRegion(0,0,9,9,!0);f.setRegion(e-8,0,8,9,!0);f.setRegion(0,e-8,9,8,!0);for(var g of b.alignmentPatternCenters)for(var h of b.alignmentPatternCenters)6===g&&6===h||6===g&&h===e-7||g===e-7&&6===h||f.setRegion(g-2,h-2,5,5,!0);f.setRegion(6,9,1,e-17,!0);f.setRegion(9,6,e-17,1,!0);6<b.versionNumber&&(f.setRegion(e-11,0,3,6,!0),f.setRegion(0,e-11,6,3,!0));b=[];h=g=0;e=!0;for(let k=d-1;0<k;k-=2){6===
+k&&k--;for(let m=0;m<d;m++){let l=e?d-1-m:m;for(let n=0;2>n;n++){let q=k-n;if(!f.get(q,l)){h++;let r=a.get(q,l);c({y:l,x:q})&&(r=!r);g=g<<1|r;8===h&&(b.push(g),g=h=0)}}}e=!e}return b}
+function la(a){var b=a.height,c=Math.floor((b-17)/4);if(6>=c)return I[c-1];c=0;for(var d=5;0<=d;d--)for(var e=b-9;e>=b-11;e--)c=K(a.get(e,d),c);d=0;for(e=5;0<=e;e--)for(let g=b-9;g>=b-11;g--)d=K(a.get(e,g),d);a=Infinity;let f;for(let g of I){if(g.infoBits===c||g.infoBits===d)return g;b=J(c,g.infoBits);b<a&&(f=g,a=b);b=J(d,g.infoBits);b<a&&(f=g,a=b)}if(3>=a)return f}
+function ma(a){let b=0;for(var c=0;8>=c;c++)6!==c&&(b=K(a.get(c,8),b));for(c=7;0<=c;c--)6!==c&&(b=K(a.get(8,c),b));var d=a.height;c=0;for(var e=d-1;e>=d-7;e--)c=K(a.get(8,e),c);for(e=d-8;e<d;e++)c=K(a.get(e,8),c);a=Infinity;d=null;for(let {bits:f,formatInfo:g}of ia){if(f===b||f===c)return g;e=J(b,f);e<a&&(d=g,a=e);b!==c&&(e=J(c,f),e<a&&(d=g,a=e))}return 3>=a?d:null}
+function na(a,b,c){let d=b.errorCorrectionLevels[c],e=[],f=0;d.ecBlocks.forEach(h=>{for(let k=0;k<h.numBlocks;k++)e.push({numDataCodewords:h.dataCodewordsPerBlock,codewords:[]}),f+=h.dataCodewordsPerBlock+d.ecCodewordsPerBlock});if(a.length<f)return null;a=a.slice(0,f);b=d.ecBlocks[0].dataCodewordsPerBlock;for(c=0;c<b;c++)for(var g of e)g.codewords.push(a.shift());if(1<d.ecBlocks.length)for(g=d.ecBlocks[0].numBlocks,b=d.ecBlocks[1].numBlocks,c=0;c<b;c++)e[g+c].codewords.push(a.shift());for(;0<a.length;)for(let h of e)h.codewords.push(a.shift());
+return e}function L(a){let b=la(a);if(!b)return null;var c=ma(a);if(!c)return null;a=ka(a,b,c);var d=na(a,b,c.errorCorrectionLevel);if(!d)return null;c=d.reduce((e,f)=>e+f.numDataCodewords,0);c=new Uint8ClampedArray(c);a=0;for(let e of d){d=ha(e.codewords,e.codewords.length-e.numDataCodewords);if(!d)return null;for(let f=0;f<e.numDataCodewords;f++)c[a++]=d[f]}try{return da(c,b.versionNumber)}catch(e){return null}}
+function M(a,b,c,d){var e=a.x-b.x+c.x-d.x;let f=a.y-b.y+c.y-d.y;if(0===e&&0===f)return{a11:b.x-a.x,a12:b.y-a.y,a13:0,a21:c.x-b.x,a22:c.y-b.y,a23:0,a31:a.x,a32:a.y,a33:1};let g=b.x-c.x;var h=d.x-c.x;let k=b.y-c.y,m=d.y-c.y;c=g*m-h*k;h=(e*m-h*f)/c;e=(g*f-e*k)/c;return{a11:b.x-a.x+h*b.x,a12:b.y-a.y+h*b.y,a13:h,a21:d.x-a.x+e*d.x,a22:d.y-a.y+e*d.y,a23:e,a31:a.x,a32:a.y,a33:1}}
+function oa(a,b,c,d){a=M(a,b,c,d);return{a11:a.a22*a.a33-a.a23*a.a32,a12:a.a13*a.a32-a.a12*a.a33,a13:a.a12*a.a23-a.a13*a.a22,a21:a.a23*a.a31-a.a21*a.a33,a22:a.a11*a.a33-a.a13*a.a31,a23:a.a13*a.a21-a.a11*a.a23,a31:a.a21*a.a32-a.a22*a.a31,a32:a.a12*a.a31-a.a11*a.a32,a33:a.a11*a.a22-a.a12*a.a21}}
+function pa(a,b){var c=oa({x:3.5,y:3.5},{x:b.dimension-3.5,y:3.5},{x:b.dimension-6.5,y:b.dimension-6.5},{x:3.5,y:b.dimension-3.5}),d=M(b.topLeft,b.topRight,b.alignmentPattern,b.bottomLeft),e=d.a11*c.a11+d.a21*c.a12+d.a31*c.a13,f=d.a12*c.a11+d.a22*c.a12+d.a32*c.a13,g=d.a13*c.a11+d.a23*c.a12+d.a33*c.a13,h=d.a11*c.a21+d.a21*c.a22+d.a31*c.a23,k=d.a12*c.a21+d.a22*c.a22+d.a32*c.a23,m=d.a13*c.a21+d.a23*c.a22+d.a33*c.a23,l=d.a11*c.a31+d.a21*c.a32+d.a31*c.a33,n=d.a12*c.a31+d.a22*c.a32+d.a32*c.a33,q=d.a13*
+c.a31+d.a23*c.a32+d.a33*c.a33;c=x.createEmpty(b.dimension,b.dimension);d=(r,u)=>{const p=g*r+m*u+q;return{x:(e*r+h*u+l)/p,y:(f*r+k*u+n)/p}};for(let r=0;r<b.dimension;r++)for(let u=0;u<b.dimension;u++){let p=d(u+.5,r+.5);c.set(u,r,a.get(Math.floor(p.x),Math.floor(p.y)))}return{matrix:c,mappingFunction:d}}let N=(a,b)=>Math.sqrt(Math.pow(b.x-a.x,2)+Math.pow(b.y-a.y,2));function O(a){return a.reduce((b,c)=>b+c)}
+function qa(a,b,c){let d=N(a,b),e=N(b,c),f=N(a,c),g,h,k;e>=d&&e>=f?[g,h,k]=[b,a,c]:f>=e&&f>=d?[g,h,k]=[a,b,c]:[g,h,k]=[a,c,b];0>(k.x-h.x)*(g.y-h.y)-(k.y-h.y)*(g.x-h.x)&&([g,k]=[k,g]);return{bottomLeft:g,topLeft:h,topRight:k}}
+function ra(a,b,c,d){d=(O(P(a,c,d,5))/7+O(P(a,b,d,5))/7+O(P(c,a,d,5))/7+O(P(b,a,d,5))/7)/4;if(1>d)throw Error("Invalid module size");b=Math.round(N(a,b)/d);a=Math.round(N(a,c)/d);a=Math.floor((b+a)/2)+7;switch(a%4){case 0:a++;break;case 2:a--}return{dimension:a,moduleSize:d}}
+function Q(a,b,c,d){let e=[{x:Math.floor(a.x),y:Math.floor(a.y)}];var f=Math.abs(b.y-a.y)>Math.abs(b.x-a.x);if(f){var g=Math.floor(a.y);var h=Math.floor(a.x);a=Math.floor(b.y);b=Math.floor(b.x)}else g=Math.floor(a.x),h=Math.floor(a.y),a=Math.floor(b.x),b=Math.floor(b.y);let k=Math.abs(a-g),m=Math.abs(b-h),l=Math.floor(-k/2),n=g<a?1:-1,q=h<b?1:-1,r=!0;for(let u=g,p=h;u!==a+n;u+=n){g=f?p:u;h=f?u:p;if(c.get(g,h)!==r&&(r=!r,e.push({x:g,y:h}),e.length===d+1))break;l+=m;if(0<l){if(p===b)break;p+=q;l-=k}}c=
+[];for(f=0;f<d;f++)e[f]&&e[f+1]?c.push(N(e[f],e[f+1])):c.push(0);return c}function P(a,b,c,d){let e=b.y-a.y,f=b.x-a.x;b=Q(a,b,c,Math.ceil(d/2));a=Q(a,{x:a.x-f,y:a.y-e},c,Math.ceil(d/2));c=b.shift()+a.shift()-1;return a.concat(c).concat(...b)}function R(a,b){let c=O(a)/O(b),d=0;b.forEach((e,f)=>{d+=Math.pow(a[f]-e*c,2)});return{averageSize:c,error:d}}
+function S(a,b,c){try{let d=P(a,{x:-1,y:a.y},c,b.length),e=P(a,{x:a.x,y:-1},c,b.length),f=P(a,{x:Math.max(0,a.x-a.y)-1,y:Math.max(0,a.y-a.x)-1},c,b.length),g=P(a,{x:Math.min(c.width,a.x+a.y)+1,y:Math.min(c.height,a.y+a.x)+1},c,b.length),h=R(d,b),k=R(e,b),m=R(f,b),l=R(g,b),n=(h.averageSize+k.averageSize+m.averageSize+l.averageSize)/4;return Math.sqrt(h.error*h.error+k.error*k.error+m.error*m.error+l.error*l.error)+(Math.pow(h.averageSize-n,2)+Math.pow(k.averageSize-n,2)+Math.pow(m.averageSize-n,2)+
+Math.pow(l.averageSize-n,2))/n}catch(d){return Infinity}}function T(a,b){for(var c=Math.round(b.x);a.get(c,Math.round(b.y));)c--;for(var d=Math.round(b.x);a.get(d,Math.round(b.y));)d++;c=(c+d)/2;for(d=Math.round(b.y);a.get(Math.round(c),d);)d--;for(b=Math.round(b.y);a.get(Math.round(c),b);)b++;return{x:c,y:(d+b)/2}}
+function sa(a){var b=[],c=[];let d=[];var e=[];for(let p=0;p<=a.height;p++){var f=0,g=!1;let t=[0,0,0,0,0];for(let v=-1;v<=a.width;v++){var h=a.get(v,p);if(h===g)f++;else{t=[t[1],t[2],t[3],t[4],f];f=1;g=h;var k=O(t)/7;k=Math.abs(t[0]-k)<k&&Math.abs(t[1]-k)<k&&Math.abs(t[2]-3*k)<3*k&&Math.abs(t[3]-k)<k&&Math.abs(t[4]-k)<k&&!h;var m=O(t.slice(-3))/3;h=Math.abs(t[2]-m)<m&&Math.abs(t[3]-m)<m&&Math.abs(t[4]-m)<m&&h;if(k){let z=v-t[3]-t[4],y=z-t[2];k={startX:y,endX:z,y:p};m=c.filter(w=>y>=w.bottom.startX&&
+y<=w.bottom.endX||z>=w.bottom.startX&&y<=w.bottom.endX||y<=w.bottom.startX&&z>=w.bottom.endX&&1.5>t[2]/(w.bottom.endX-w.bottom.startX)&&.5<t[2]/(w.bottom.endX-w.bottom.startX));0<m.length?m[0].bottom=k:c.push({top:k,bottom:k})}if(h){let z=v-t[4],y=z-t[3];h={startX:y,y:p,endX:z};k=e.filter(w=>y>=w.bottom.startX&&y<=w.bottom.endX||z>=w.bottom.startX&&y<=w.bottom.endX||y<=w.bottom.startX&&z>=w.bottom.endX&&1.5>t[2]/(w.bottom.endX-w.bottom.startX)&&.5<t[2]/(w.bottom.endX-w.bottom.startX));0<k.length?
+k[0].bottom=h:e.push({top:h,bottom:h})}}}b.push(...c.filter(v=>v.bottom.y!==p&&2<=v.bottom.y-v.top.y));c=c.filter(v=>v.bottom.y===p);d.push(...e.filter(v=>v.bottom.y!==p));e=e.filter(v=>v.bottom.y===p)}b.push(...c.filter(p=>2<=p.bottom.y-p.top.y));d.push(...e);c=[];for(var l of b)2>l.bottom.y-l.top.y||(b=(l.top.startX+l.top.endX+l.bottom.startX+l.bottom.endX)/4,e=(l.top.y+l.bottom.y+1)/2,a.get(Math.round(b),Math.round(e))&&(f=[l.top.endX-l.top.startX,l.bottom.endX-l.bottom.startX,l.bottom.y-l.top.y+
+1],f=O(f)/f.length,g=S({x:Math.round(b),y:Math.round(e)},[1,1,3,1,1],a),c.push({score:g,x:b,y:e,size:f})));if(3>c.length)return null;c.sort((p,t)=>p.score-t.score);l=[];for(b=0;b<Math.min(c.length,5);++b){e=c[b];f=[];for(var n of c)n!==e&&f.push(Object.assign(Object.assign({},n),{score:n.score+Math.pow(n.size-e.size,2)/e.size}));f.sort((p,t)=>p.score-t.score);l.push({points:[e,f[0],f[1]],score:e.score+f[0].score+f[1].score})}l.sort((p,t)=>p.score-t.score);let {topRight:q,topLeft:r,bottomLeft:u}=qa(...l[0].points);
+l=U(a,d,q,r,u);n=[];l&&n.push({alignmentPattern:{x:l.alignmentPattern.x,y:l.alignmentPattern.y},bottomLeft:{x:u.x,y:u.y},dimension:l.dimension,topLeft:{x:r.x,y:r.y},topRight:{x:q.x,y:q.y}});l=T(a,q);b=T(a,r);c=T(a,u);(a=U(a,d,l,b,c))&&n.push({alignmentPattern:{x:a.alignmentPattern.x,y:a.alignmentPattern.y},bottomLeft:{x:c.x,y:c.y},topLeft:{x:b.x,y:b.y},topRight:{x:l.x,y:l.y},dimension:a.dimension});return 0===n.length?null:n}
+function U(a,b,c,d,e){let f,g;try{({dimension:f,moduleSize:g}=ra(d,c,e,a))}catch(l){return null}var h=c.x-d.x+e.x,k=c.y-d.y+e.y;c=(N(d,e)+N(d,c))/2/g;e=1-3/c;let m={x:d.x+e*(h-d.x),y:d.y+e*(k-d.y)};b=b.map(l=>{const n=(l.top.startX+l.top.endX+l.bottom.startX+l.bottom.endX)/4;l=(l.top.y+l.bottom.y+1)/2;if(a.get(Math.floor(n),Math.floor(l))){var q=S({x:Math.floor(n),y:Math.floor(l)},[1,1,1],a)+N({x:n,y:l},m);return{x:n,y:l,score:q}}}).filter(l=>!!l).sort((l,n)=>l.score-n.score);return{alignmentPattern:15<=
+c&&b.length?b[0]:m,dimension:f}}
+function V(a){var b=sa(a);if(!b)return null;for(let e of b){b=pa(a,e);var c=b.matrix;if(null==c)c=null;else{var d=L(c);if(d)c=d;else{for(d=0;d<c.width;d++)for(let f=d+1;f<c.height;f++)c.get(d,f)!==c.get(f,d)&&(c.set(d,f,!c.get(d,f)),c.set(f,d,!c.get(f,d)));c=L(c)}}if(c)return{binaryData:c.bytes,data:c.text,chunks:c.chunks,version:c.version,location:{topRightCorner:b.mappingFunction(e.dimension,0),topLeftCorner:b.mappingFunction(0,0),bottomRightCorner:b.mappingFunction(e.dimension,e.dimension),bottomLeftCorner:b.mappingFunction(0,
+e.dimension),topRightFinderPattern:e.topRight,topLeftFinderPattern:e.topLeft,bottomLeftFinderPattern:e.bottomLeft,bottomRightAlignmentPattern:e.alignmentPattern},matrix:b.matrix}}return null}let ta={inversionAttempts:"attemptBoth",greyScaleWeights:{red:.2126,green:.7152,blue:.0722,useIntegerApproximation:!1},canOverwriteImage:!0};function W(a,b){Object.keys(b).forEach(c=>{a[c]=b[c]})}
+function X(a,b,c,d={}){let e=Object.create(null);W(e,ta);W(e,d);d="onlyInvert"===e.inversionAttempts||"invertFirst"===e.inversionAttempts;var f="attemptBoth"===e.inversionAttempts||d;var g=e.greyScaleWeights,h=e.canOverwriteImage,k=b*c;if(a.length!==4*k)throw Error("Malformed data passed to binarizer.");var m=0;if(h){var l=new Uint8ClampedArray(a.buffer,m,k);m+=k}l=new A(b,c,l);if(g.useIntegerApproximation)for(var n=0;n<c;n++)for(var q=0;q<b;q++){var r=4*(n*b+q);l.set(q,n,g.red*a[r]+g.green*a[r+1]+
+g.blue*a[r+2]+128>>8)}else for(n=0;n<c;n++)for(q=0;q<b;q++)r=4*(n*b+q),l.set(q,n,g.red*a[r]+g.green*a[r+1]+g.blue*a[r+2]);g=Math.ceil(b/8);n=Math.ceil(c/8);q=g*n;if(h){var u=new Uint8ClampedArray(a.buffer,m,q);m+=q}u=new A(g,n,u);for(q=0;q<n;q++)for(r=0;r<g;r++){var p=Infinity,t=0;for(var v=0;8>v;v++)for(let w=0;8>w;w++){let aa=l.get(8*r+w,8*q+v);p=Math.min(p,aa);t=Math.max(t,aa)}v=(p+t)/2;v=Math.min(255,1.11*v);24>=t-p&&(v=p/2,0<q&&0<r&&(t=(u.get(r,q-1)+2*u.get(r-1,q)+u.get(r-1,q-1))/4,p<t&&(v=t)));
+u.set(r,q,v)}h?(q=new Uint8ClampedArray(a.buffer,m,k),m+=k,q=new x(q,b)):q=x.createEmpty(b,c);r=null;f&&(h?(a=new Uint8ClampedArray(a.buffer,m,k),r=new x(a,b)):r=x.createEmpty(b,c));for(b=0;b<n;b++)for(a=0;a<g;a++){c=g-3;c=2>a?2:a>c?c:a;h=n-3;h=2>b?2:b>h?h:b;k=0;for(m=-2;2>=m;m++)for(p=-2;2>=p;p++)k+=u.get(c+m,h+p);c=k/25;for(h=0;8>h;h++)for(k=0;8>k;k++)m=8*a+h,p=8*b+k,t=l.get(m,p),q.set(m,p,t<=c),f&&r.set(m,p,!(t<=c))}f=f?{binarized:q,inverted:r}:{binarized:q};let {binarized:z,inverted:y}=f;(f=V(d?
+y:z))||"attemptBoth"!==e.inversionAttempts&&"invertFirst"!==e.inversionAttempts||(f=V(d?z:y));return f}X.default=X;let Y="dontInvert",Z={red:77,green:150,blue:29,useIntegerApproximation:!0};
+self.onmessage=a=>{let b=a.data.id,c=a.data.data;switch(a.data.type){case "decode":(a=X(c.data,c.width,c.height,{inversionAttempts:Y,greyScaleWeights:Z}))?self.postMessage({id:b,type:"qrResult",data:a.data,cornerPoints:[a.location.topLeftCorner,a.location.topRightCorner,a.location.bottomRightCorner,a.location.bottomLeftCorner]}):self.postMessage({id:b,type:"qrResult",data:null});break;case "grayscaleWeights":Z.red=c.red;Z.green=c.green;Z.blue=c.blue;Z.useIntegerApproximation=c.useIntegerApproximation;
+break;case "inversionMode":switch(c){case "original":Y="dontInvert";break;case "invert":Y="onlyInvert";break;case "both":Y="attemptBoth";break;default:throw Error("Invalid inversion mode");}break;case "close":self.close()}}
+`]),{type:"application/javascript"}))
+'use strict';(function(e,a){"object"===typeof exports&&"undefined"!==typeof module?module.exports=a():"function"===typeof define&&define.amd?define(a):(e="undefined"!==typeof globalThis?globalThis:e||self,e.QrScanner=a())})(this,function(){class e{constructor(a,b,c,d,f){this._legacyCanvasSize=e.DEFAULT_CANVAS_SIZE;this._preferredCamera="environment";this._maxScansPerSecond=25;this._lastScanTimestamp=-1;this._destroyed=this._flashOn=this._paused=this._active=!1;this.$video=a;this.$canvas=document.createElement("canvas");
+c&&"object"===typeof c?this._onDecode=b:(c||d||f?console.warn("You're using a deprecated version of the QrScanner constructor which will be removed in the future"):console.warn("Note that the type of the scan result passed to onDecode will change in the future. To already switch to the new api today, you can pass returnDetailedScanResult: true."),this._legacyOnDecode=b);b="object"===typeof c?c:{};this._onDecodeError=b.onDecodeError||("function"===typeof c?c:this._onDecodeError);this._calculateScanRegion=
+b.calculateScanRegion||("function"===typeof d?d:this._calculateScanRegion);this._preferredCamera=b.preferredCamera||f||this._preferredCamera;this._legacyCanvasSize="number"===typeof c?c:"number"===typeof d?d:this._legacyCanvasSize;this._maxScansPerSecond=b.maxScansPerSecond||this._maxScansPerSecond;this._onPlay=this._onPlay.bind(this);this._onLoadedMetaData=this._onLoadedMetaData.bind(this);this._onVisibilityChange=this._onVisibilityChange.bind(this);this._updateOverlay=this._updateOverlay.bind(this);
+a.disablePictureInPicture=!0;a.playsInline=!0;a.muted=!0;let h=!1;a.hidden&&(a.hidden=!1,h=!0);document.body.contains(a)||(document.body.appendChild(a),h=!0);c=a.parentElement;if(b.highlightScanRegion||b.highlightCodeOutline){d=!!b.overlay;this.$overlay=b.overlay||document.createElement("div");f=this.$overlay.style;f.position="absolute";f.display="none";f.pointerEvents="none";this.$overlay.classList.add("scan-region-highlight");if(!d&&b.highlightScanRegion){this.$overlay.innerHTML='<svg class="scan-region-highlight-svg" viewBox="0 0 238 238" preserveAspectRatio="none" style="position:absolute;width:100%;height:100%;left:0;top:0;fill:none;stroke:#e9b213;stroke-width:4;stroke-linecap:round;stroke-linejoin:round"><path d="M31 2H10a8 8 0 0 0-8 8v21M207 2h21a8 8 0 0 1 8 8v21m0 176v21a8 8 0 0 1-8 8h-21m-176 0H10a8 8 0 0 1-8-8v-21"/></svg>';
+try{this.$overlay.firstElementChild.animate({transform:["scale(.98)","scale(1.01)"]},{duration:400,iterations:Infinity,direction:"alternate",easing:"ease-in-out"})}catch(m){}c.insertBefore(this.$overlay,this.$video.nextSibling)}b.highlightCodeOutline&&(this.$overlay.insertAdjacentHTML("beforeend",'<svg class="code-outline-highlight" preserveAspectRatio="none" style="display:none;width:100%;height:100%;fill:none;stroke:#e9b213;stroke-width:5;stroke-dasharray:25;stroke-linecap:round;stroke-linejoin:round"><polygon/></svg>'),
+this.$codeOutlineHighlight=this.$overlay.lastElementChild)}this._scanRegion=this._calculateScanRegion(a);requestAnimationFrame(()=>{let m=window.getComputedStyle(a);"none"===m.display&&(a.style.setProperty("display","block","important"),h=!0);"visible"!==m.visibility&&(a.style.setProperty("visibility","visible","important"),h=!0);h&&(console.warn("QrScanner has overwritten the video hiding style to avoid Safari stopping the playback."),a.style.opacity="0",a.style.width="0",a.style.height="0",this.$overlay&&
+this.$overlay.parentElement&&this.$overlay.parentElement.removeChild(this.$overlay),delete this.$overlay,delete this.$codeOutlineHighlight);this.$overlay&&this._updateOverlay()});a.addEventListener("play",this._onPlay);a.addEventListener("loadedmetadata",this._onLoadedMetaData);document.addEventListener("visibilitychange",this._onVisibilityChange);window.addEventListener("resize",this._updateOverlay);this._qrEnginePromise=e.createQrEngine()}static set WORKER_PATH(a){console.warn("Setting QrScanner.WORKER_PATH is not required and not supported anymore. Have a look at the README for new setup instructions.")}static async hasCamera(){try{return!!(await e.listCameras(!1)).length}catch(a){return!1}}static async listCameras(a=
+!1){if(!navigator.mediaDevices)return[];let b=async()=>(await navigator.mediaDevices.enumerateDevices()).filter(d=>"videoinput"===d.kind),c;try{a&&(await b()).every(d=>!d.label)&&(c=await navigator.mediaDevices.getUserMedia({audio:!1,video:!0}))}catch(d){}try{return(await b()).map((d,f)=>({id:d.deviceId,label:d.label||(0===f?"Default Camera":`Camera ${f+1}`)}))}finally{c&&(console.warn("Call listCameras after successfully starting a QR scanner to avoid creating a temporary video stream"),e._stopVideoStream(c))}}async hasFlash(){let a;
+try{if(this.$video.srcObject){if(!(this.$video.srcObject instanceof MediaStream))return!1;a=this.$video.srcObject}else a=(await this._getCameraStream()).stream;return"torch"in a.getVideoTracks()[0].getSettings()}catch(b){return!1}finally{a&&a!==this.$video.srcObject&&(console.warn("Call hasFlash after successfully starting the scanner to avoid creating a temporary video stream"),e._stopVideoStream(a))}}isFlashOn(){return this._flashOn}async toggleFlash(){this._flashOn?await this.turnFlashOff():await this.turnFlashOn()}async turnFlashOn(){if(!this._flashOn&&
+!this._destroyed&&(this._flashOn=!0,this._active&&!this._paused))try{if(!await this.hasFlash())throw"No flash available";await this.$video.srcObject.getVideoTracks()[0].applyConstraints({advanced:[{torch:!0}]})}catch(a){throw this._flashOn=!1,a;}}async turnFlashOff(){this._flashOn&&(this._flashOn=!1,await this._restartVideoStream())}destroy(){this.$video.removeEventListener("loadedmetadata",this._onLoadedMetaData);this.$video.removeEventListener("play",this._onPlay);document.removeEventListener("visibilitychange",
+this._onVisibilityChange);window.removeEventListener("resize",this._updateOverlay);this._destroyed=!0;this._flashOn=!1;this.stop();e._postWorkerMessage(this._qrEnginePromise,"close")}async start(){if(this._destroyed)throw Error("The QR scanner can not be started as it had been destroyed.");if(!this._active||this._paused)if("https:"!==window.location.protocol&&console.warn("The camera stream is only accessible if the page is transferred via https."),this._active=!0,!document.hidden)if(this._paused=
+!1,this.$video.srcObject)await this.$video.play();else try{let {stream:a,facingMode:b}=await this._getCameraStream();!this._active||this._paused?e._stopVideoStream(a):(this._setVideoMirror(b),this.$video.srcObject=a,await this.$video.play(),this._flashOn&&(this._flashOn=!1,this.turnFlashOn().catch(()=>{})))}catch(a){if(!this._paused)throw this._active=!1,a;}}stop(){this.pause();this._active=!1}async pause(a=!1){this._paused=!0;if(!this._active)return!0;this.$video.pause();this.$overlay&&(this.$overlay.style.display=
+"none");let b=()=>{this.$video.srcObject instanceof MediaStream&&(e._stopVideoStream(this.$video.srcObject),this.$video.srcObject=null)};if(a)return b(),!0;await new Promise(c=>setTimeout(c,300));if(!this._paused)return!1;b();return!0}async setCamera(a){a!==this._preferredCamera&&(this._preferredCamera=a,await this._restartVideoStream())}static async scanImage(a,b,c,d,f=!1,h=!1){let m,n=!1;b&&("scanRegion"in b||"qrEngine"in b||"canvas"in b||"disallowCanvasResizing"in b||"alsoTryWithoutScanRegion"in
+b||"returnDetailedScanResult"in b)?(m=b.scanRegion,c=b.qrEngine,d=b.canvas,f=b.disallowCanvasResizing||!1,h=b.alsoTryWithoutScanRegion||!1,n=!0):b||c||d||f||h?console.warn("You're using a deprecated api for scanImage which will be removed in the future."):console.warn("Note that the return type of scanImage will change in the future. To already switch to the new api today, you can pass returnDetailedScanResult: true.");b=!!c;try{let p,k;[c,p]=await Promise.all([c||e.createQrEngine(),e._loadImage(a)]);
+[d,k]=e._drawToCanvas(p,m,d,f);let q;if(c instanceof Worker){let g=c;b||e._postWorkerMessageSync(g,"inversionMode","both");q=await new Promise((l,v)=>{let w,u,r,y=-1;u=t=>{t.data.id===y&&(g.removeEventListener("message",u),g.removeEventListener("error",r),clearTimeout(w),null!==t.data.data?l({data:t.data.data,cornerPoints:e._convertPoints(t.data.cornerPoints,m)}):v(e.NO_QR_CODE_FOUND))};r=t=>{g.removeEventListener("message",u);g.removeEventListener("error",r);clearTimeout(w);v("Scanner error: "+(t?
+t.message||t:"Unknown Error"))};g.addEventListener("message",u);g.addEventListener("error",r);w=setTimeout(()=>r("timeout"),1E4);let x=k.getImageData(0,0,d.width,d.height);y=e._postWorkerMessageSync(g,"decode",x,[x.data.buffer])})}else q=await Promise.race([new Promise((g,l)=>window.setTimeout(()=>l("Scanner error: timeout"),1E4)),(async()=>{try{var [g]=await c.detect(d);if(!g)throw e.NO_QR_CODE_FOUND;return{data:g.rawValue,cornerPoints:e._convertPoints(g.cornerPoints,m)}}catch(l){g=l.message||l;
+if(/not implemented|service unavailable/.test(g))return e._disableBarcodeDetector=!0,e.scanImage(a,{scanRegion:m,canvas:d,disallowCanvasResizing:f,alsoTryWithoutScanRegion:h});throw`Scanner error: ${g}`;}})()]);return n?q:q.data}catch(p){if(!m||!h)throw p;let k=await e.scanImage(a,{qrEngine:c,canvas:d,disallowCanvasResizing:f});return n?k:k.data}finally{b||e._postWorkerMessage(c,"close")}}setGrayscaleWeights(a,b,c,d=!0){e._postWorkerMessage(this._qrEnginePromise,"grayscaleWeights",{red:a,green:b,
+blue:c,useIntegerApproximation:d})}setInversionMode(a){e._postWorkerMessage(this._qrEnginePromise,"inversionMode",a)}static async createQrEngine(a){a&&console.warn("Specifying a worker path is not required and not supported anymore.");a=()=>Promise.resolve({createWorker:window.__h25QrWorker}).then(c=>c.createWorker());if(!(!e._disableBarcodeDetector&&"BarcodeDetector"in window&&BarcodeDetector.getSupportedFormats&&(await BarcodeDetector.getSupportedFormats()).includes("qr_code")))return a();let b=navigator.userAgentData;
+return b&&b.brands.some(({brand:c})=>/Chromium/i.test(c))&&/mac ?OS/i.test(b.platform)&&await b.getHighEntropyValues(["architecture","platformVersion"]).then(({architecture:c,platformVersion:d})=>/arm/i.test(c||"arm")&&13<=parseInt(d||"13")).catch(()=>!0)?a():new BarcodeDetector({formats:["qr_code"]})}_onPlay(){this._scanRegion=this._calculateScanRegion(this.$video);this._updateOverlay();this.$overlay&&(this.$overlay.style.display="");this._scanFrame()}_onLoadedMetaData(){this._scanRegion=this._calculateScanRegion(this.$video);
+this._updateOverlay()}_onVisibilityChange(){document.hidden?this.pause():this._active&&this.start()}_calculateScanRegion(a){let b=Math.round(2/3*Math.min(a.videoWidth,a.videoHeight));return{x:Math.round((a.videoWidth-b)/2),y:Math.round((a.videoHeight-b)/2),width:b,height:b,downScaledWidth:this._legacyCanvasSize,downScaledHeight:this._legacyCanvasSize}}_updateOverlay(){requestAnimationFrame(()=>{if(this.$overlay){var a=this.$video,b=a.videoWidth,c=a.videoHeight,d=a.offsetWidth,f=a.offsetHeight,h=a.offsetLeft,
+m=a.offsetTop,n=window.getComputedStyle(a),p=n.objectFit,k=b/c,q=d/f;switch(p){case "none":var g=b;var l=c;break;case "fill":g=d;l=f;break;default:("cover"===p?k>q:k<q)?(l=f,g=l*k):(g=d,l=g/k),"scale-down"===p&&(g=Math.min(g,b),l=Math.min(l,c))}var [v,w]=n.objectPosition.split(" ").map((r,y)=>{const x=parseFloat(r);return r.endsWith("%")?(y?f-l:d-g)*x/100:x});n=this._scanRegion.width||b;q=this._scanRegion.height||c;p=this._scanRegion.x||0;var u=this._scanRegion.y||0;k=this.$overlay.style;k.width=
+`${n/b*g}px`;k.height=`${q/c*l}px`;k.top=`${m+w+u/c*l}px`;c=/scaleX\(-1\)/.test(a.style.transform);k.left=`${h+(c?d-v-g:v)+(c?b-p-n:p)/b*g}px`;k.transform=a.style.transform}})}static _convertPoints(a,b){if(!b)return a;let c=b.x||0,d=b.y||0,f=b.width&&b.downScaledWidth?b.width/b.downScaledWidth:1;b=b.height&&b.downScaledHeight?b.height/b.downScaledHeight:1;for(let h of a)h.x=h.x*f+c,h.y=h.y*b+d;return a}_scanFrame(){!this._active||this.$video.paused||this.$video.ended||("requestVideoFrameCallback"in
+this.$video?this.$video.requestVideoFrameCallback.bind(this.$video):requestAnimationFrame)(async()=>{if(!(1>=this.$video.readyState)){var a=Date.now()-this._lastScanTimestamp,b=1E3/this._maxScansPerSecond;a<b&&await new Promise(d=>setTimeout(d,b-a));this._lastScanTimestamp=Date.now();try{var c=await e.scanImage(this.$video,{scanRegion:this._scanRegion,qrEngine:this._qrEnginePromise,canvas:this.$canvas})}catch(d){if(!this._active)return;this._onDecodeError(d)}!e._disableBarcodeDetector||await this._qrEnginePromise instanceof
+Worker||(this._qrEnginePromise=e.createQrEngine());c?(this._onDecode?this._onDecode(c):this._legacyOnDecode&&this._legacyOnDecode(c.data),this.$codeOutlineHighlight&&(clearTimeout(this._codeOutlineHighlightRemovalTimeout),this._codeOutlineHighlightRemovalTimeout=void 0,this.$codeOutlineHighlight.setAttribute("viewBox",`${this._scanRegion.x||0} `+`${this._scanRegion.y||0} `+`${this._scanRegion.width||this.$video.videoWidth} `+`${this._scanRegion.height||this.$video.videoHeight}`),this.$codeOutlineHighlight.firstElementChild.setAttribute("points",
+c.cornerPoints.map(({x:d,y:f})=>`${d},${f}`).join(" ")),this.$codeOutlineHighlight.style.display="")):this.$codeOutlineHighlight&&!this._codeOutlineHighlightRemovalTimeout&&(this._codeOutlineHighlightRemovalTimeout=setTimeout(()=>this.$codeOutlineHighlight.style.display="none",100))}this._scanFrame()})}_onDecodeError(a){a!==e.NO_QR_CODE_FOUND&&console.log(a)}async _getCameraStream(){if(!navigator.mediaDevices)throw"Camera not found.";let a=/^(environment|user)$/.test(this._preferredCamera)?"facingMode":
+"deviceId",b=[{width:{min:1024}},{width:{min:768}},{}],c=b.map(d=>Object.assign({},d,{[a]:{exact:this._preferredCamera}}));for(let d of[...c,...b])try{let f=await navigator.mediaDevices.getUserMedia({video:d,audio:!1}),h=this._getFacingMode(f)||(d.facingMode?this._preferredCamera:"environment"===this._preferredCamera?"user":"environment");return{stream:f,facingMode:h}}catch(f){}throw"Camera not found.";}async _restartVideoStream(){let a=this._paused;await this.pause(!0)&&!a&&this._active&&await this.start()}static _stopVideoStream(a){for(let b of a.getTracks())b.stop(),
+a.removeTrack(b)}_setVideoMirror(a){this.$video.style.transform="scaleX("+("user"===a?-1:1)+")"}_getFacingMode(a){return(a=a.getVideoTracks()[0])?/rear|back|environment/i.test(a.label)?"environment":/front|user|face/i.test(a.label)?"user":null:null}static _drawToCanvas(a,b,c,d=!1){c=c||document.createElement("canvas");let f=b&&b.x?b.x:0,h=b&&b.y?b.y:0,m=b&&b.width?b.width:a.videoWidth||a.width,n=b&&b.height?b.height:a.videoHeight||a.height;d||(d=b&&b.downScaledWidth?b.downScaledWidth:m,b=b&&b.downScaledHeight?
+b.downScaledHeight:n,c.width!==d&&(c.width=d),c.height!==b&&(c.height=b));b=c.getContext("2d",{alpha:!1});b.imageSmoothingEnabled=!1;b.drawImage(a,f,h,m,n,0,0,c.width,c.height);return[c,b]}static async _loadImage(a){if(a instanceof Image)return await e._awaitImageLoad(a),a;if(a instanceof HTMLVideoElement||a instanceof HTMLCanvasElement||a instanceof SVGImageElement||"OffscreenCanvas"in window&&a instanceof OffscreenCanvas||"ImageBitmap"in window&&a instanceof ImageBitmap)return a;if(a instanceof
+File||a instanceof Blob||a instanceof URL||"string"===typeof a){let b=new Image;b.src=a instanceof File||a instanceof Blob?URL.createObjectURL(a):a.toString();try{return await e._awaitImageLoad(b),b}finally{(a instanceof File||a instanceof Blob)&&URL.revokeObjectURL(b.src)}}else throw"Unsupported image type.";}static async _awaitImageLoad(a){a.complete&&0!==a.naturalWidth||await new Promise((b,c)=>{let d=f=>{a.removeEventListener("load",d);a.removeEventListener("error",d);f instanceof ErrorEvent?
+c("Image load error"):b()};a.addEventListener("load",d);a.addEventListener("error",d)})}static async _postWorkerMessage(a,b,c,d){return e._postWorkerMessageSync(await a,b,c,d)}static _postWorkerMessageSync(a,b,c,d){if(!(a instanceof Worker))return-1;let f=e._workerMessageId++;a.postMessage({id:f,type:b,data:c},d);return f}}e.DEFAULT_CANVAS_SIZE=400;e.NO_QR_CODE_FOUND="No QR code found";e._disableBarcodeDetector=!1;e._workerMessageId=0;return e})
+
+</script>
+<script type="module">
+/* HUDDLE 25 – Group Management & QR Attendance
+   One page, two modes:
+     • Admin   – open the page normally and sign in with Google.
+     • Scanner – open the staff link (…#k=SECRET). No account needed.
+   Data lives in Firebase Firestore; access is enforced by the Firestore security rules. */
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInAnonymously, signOut }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, collection, query, where,
+  onSnapshot, getDoc, setDoc, writeBatch, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+// Public identifiers of the Firebase project (not secrets – the security rules protect the data).
+const firebaseConfig = {
+  apiKey: 'AIzaSyD59k79DM4sxeapRUFymvSGCe7XisaYb7I',
+  authDomain: 'huddle25.firebaseapp.com',
+  projectId: 'huddle25',
+  storageBucket: 'huddle25.firebasestorage.app',
+  messagingSenderId: '1089863885771',
+  appId: '1:1089863885771:web:b61e1e38858e606f158c4e',
+};
+
+const keyMatch = /[#&]k=([A-Za-z0-9_-]+)/.exec(location.hash);
+const MODE = keyMatch ? 'scan' : 'admin';
+const KEY = keyMatch ? keyMatch[1] : null;
+
+/* ───────────────────────── Firebase (thin wrappers) ───────────────────────── */
+// The scanner uses its own named app so testing the staff link never signs the admin out.
+const fbApp = MODE === 'scan' ? initializeApp(firebaseConfig, 'scanner') : initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+let db;
+try { // offline cache: scans are kept on the phone and sent when the connection returns
+  db = initializeFirestore(fbApp, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+} catch (e) { db = initializeFirestore(fbApp, {}); }
+const TS = () => serverTimestamp();
+
+function plain(d) {
+  const data = d.data({ serverTimestamps: 'estimate' });
+  if (!data) return null;
+  const out = { id: d.id, _pending: d.metadata.hasPendingWrites };
+  for (const [k, v] of Object.entries(data)) out[k] = v && typeof v.toMillis === 'function' ? v.toMillis() : v;
+  return out;
+}
+const dref = path => doc(db, ...path.split('/'));
+const getOnce = async path => plain(await getDoc(dref(path)));
+const put = (path, data) => setDoc(dref(path), data);
+const watchDoc = (path, cb, err) => onSnapshot(dref(path), { includeMetadataChanges: true }, s => cb(plain(s)), err);
+function watchCol(name, cb, err, filter) {
+  const q = filter ? query(collection(db, name), where(...filter)) : collection(db, name);
+  return onSnapshot(q, { includeMetadataChanges: true }, s => cb(s.docs.map(plain)), err);
+}
+async function batch(ops) { // ops: [{path, data}]  (data === null → delete)
+  for (let i = 0; i < ops.length; i += 400) {
+    const b = writeBatch(db);
+    for (const o of ops.slice(i, i + 400)) o.data === null ? b.delete(dref(o.path)) : b.set(dref(o.path), o.data);
+    await b.commit();
+  }
+}
+
+/* ───────────────────────── Helpers ───────────────────────── */
+const GROUPS = { 1: 'Red', 2: 'Blue', 3: 'Green', 4: 'Yellow' };
+const $ = (s, el = document) => el.querySelector(s);
+const root = $('#app');
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const badge = g => GROUPS[g] ? `<span class="gb g${g}">Group ${g} · ${GROUPS[g]}</span>` : '<span class="chip">No group</span>';
+const rid = (n = 8) => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]).join('');
+const pad = n => String(n).padStart(2, '0');
+const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+const fmtTime = ms => ms ? new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
+const fmtDateTime = ms => ms ? new Date(ms).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+const fmtDay = d => new Date(d + 'T00:00').toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' });
+const slotKey = s => `${s.date} ${s.start}`;
+const slotLabel = s => `${fmtDay(s.date)}, ${s.start}–${s.end}`;
+const isLive = s => { const n = new Date(), hm = `${pad(n.getHours())}:${pad(n.getMinutes())}`; return s.date === todayStr() && hm >= s.start && hm <= s.end; };
+const brand = sub => `<div class="brand"><span class="mark"><i></i><i></i><i></i><i></i></span><div>HUDDLE 25${sub ? `<small>${esc(sub)}</small>` : ''}</div></div>`;
+const bySlot = list => [...list].sort((a, b) => slotKey(a).localeCompare(slotKey(b)) || String(a.title).localeCompare(String(b.title), undefined, { numeric: true }));
+
+function toast(msg, type = '') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + type; t.textContent = msg;
+  $('#toasts').append(t); setTimeout(() => t.remove(), type === 'err' ? 6000 : 3200);
+}
+/** Modal dialog. Resolves to the form values on OK, or null on cancel. `body` is trusted HTML. */
+function dialog({ title, body = '', ok = 'OK', cancel = 'Cancel', danger = false, wide = false, validate }) {
+  return new Promise(res => {
+    const w = document.createElement('div'); w.className = 'modal';
+    w.innerHTML = `<form class="modal-box ${wide ? 'wide' : ''}"><h3>${esc(title)}</h3><div>${body}</div><p class="modal-err" hidden></p>
+      <div class="modal-actions">${cancel ? `<button type="button" class="btn" data-x>${esc(cancel)}</button>` : ''}
+      <button class="btn ${danger ? 'danger' : 'primary'}" data-ok>${esc(ok)}</button></div></form>`;
+    document.body.append(w);
+    const f = $('form', w), close = v => { w.remove(); res(v); };
+    $('[data-x]', w)?.addEventListener('click', () => close(null));
+    f.addEventListener('submit', e => {
+      e.preventDefault();
+      const v = Object.fromEntries(new FormData(f)), err = validate?.(v);
+      if (err) { const p = $('.modal-err', w); p.textContent = err; p.hidden = false; return; }
+      close(v);
+    });
+    ($('input,select', f) || $('[data-ok]', f)).focus();
+  });
+}
+function parseCSV(text) { // RFC-4180: handles quotes, commas and line breaks inside fields
+  const rows = []; let row = [], cur = '', q = false;
+  text = text.replace(/^﻿/, '');
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === ',') { row.push(cur); cur = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(cur); cur = ''; rows.push(row); row = []; }
+    else cur += c;
+  }
+  if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+  return rows.filter(r => r.some(x => x.trim() !== ''));
+}
+function downloadCSV(name, rows) {
+  // Leading = + - @ are prefixed so spreadsheet apps never treat a cell as a formula.
+  const cell = v => { let s = String(v ?? ''); if (/^[=+\-@]/.test(s)) s = "'" + s; return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + rows.map(r => r.map(cell).join(',')).join('\r\n')], { type: 'text/csv' }));
+  a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/* ═════════════════════════════ ADMIN ═════════════════════════════ */
+const S = { user: null, students: [], sessions: [], att: [], scanners: [], audit: [], key: null, unsub: [] };
+const F = { tab: 'overview', sq: '', sg: '', sc: '', asid: '', af: 'all', aq: '', rq: '', rg: '' };
+let loginMsg = '';
+
+const studentMap = () => new Map(S.students.map(s => [s.id, s]));
+const groupCount = g => S.students.filter(s => s.group === g).length;
+const attOf = sid => S.att.filter(a => a.sessionId === sid);
+const audit = (action, detail) => put(`audit/${Date.now()}-${rid(4)}`, { action, detail, by: S.user.email, at: TS() })
+  .catch(e => toast('Audit log not saved: ' + e.message, 'err'));
+
+function adminBoot() {
+  onAuthStateChanged(auth, async u => {
+    S.unsub.forEach(f => f()); S.unsub = [];
+    if (!u) return renderLogin();
+    try {
+      if (!(await getOnce('private/scannerKey'))) await put('private/scannerKey', { key: rid(24), enabled: true });
+      S.user = u; renderShell(); startWatchers();
+    } catch (e) {
+      loginMsg = e.code === 'permission-denied'
+        ? `${u.email || 'This account'} is not the Huddle 25 admin account.`
+        : 'Could not connect: ' + e.message;
+      signOut(auth);
+    }
+  });
+}
+function renderLogin() {
+  root.innerHTML = `<div class="center"><div class="panel">${brand()}
+    <p>Student Group Management &amp; QR-Based Attendance</p>
+    ${loginMsg ? `<div class="note err">${esc(loginMsg)}</div>` : ''}
+    <button class="btn primary big" id="login">Sign in with Google</button>
+    <p class="sub" style="margin-top:14px">Admin only. Instructors: open the scanner link you were sent.</p></div></div>`;
+  $('#login').onclick = () => {
+    loginMsg = '';
+    const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' });
+    signInWithPopup(auth, p).catch(e => { if (e.code !== 'auth/popup-closed-by-user') toast('Sign-in failed: ' + e.message, 'err'); });
+  };
+}
+function startWatchers() {
+  const fail = e => toast('Connection problem: ' + e.message, 'err');
+  S.unsub = [
+    watchDoc('private/scannerKey', d => { S.key = d; update(); }, fail),
+    watchDoc('roster/main', d => { S.students = d?.students || []; update(); }, fail),
+    watchCol('sessions', l => { S.sessions = bySlot(l); mount(); }, fail),
+    watchCol('attendance', l => { S.att = l; update(); }, fail),
+    watchCol('scanners', l => { S.scanners = l; update(); }, fail),
+    watchCol('audit', l => { S.audit = l.sort((a, b) => b.at - a.at); update(); }, fail),
+  ];
+}
+const TABS = { overview: 'Overview', students: 'Students', sessions: 'Sessions', attendance: 'Attendance', reports: 'Reports', staff: 'Scanner link' };
+function renderShell() {
+  root.innerHTML = `<div class="top"><div class="top-in">${brand('Admin')}
+    <nav class="tabs">${Object.entries(TABS).map(([k, v]) => `<button data-tab="${k}">${v}</button>`).join('')}</nav>
+    <div class="who"><span>${esc(S.user.email)}</span><button class="btn sm" id="out">Sign out</button></div></div></div>
+    <main id="tab"></main><input type="file" id="csvFile" accept=".csv,text/csv" hidden>`;
+  $('#out').onclick = () => signOut(auth);
+  $('.tabs').onclick = e => { const t = e.target.dataset.tab; if (t) { F.tab = t; mount(); } };
+  const tab = $('#tab');
+  tab.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b) ACT[b.dataset.act]?.(b.dataset); });
+  tab.addEventListener('input', e => { const f = e.target.dataset.f; if (f) { F[f] = e.target.value; update(); } });
+  $('#csvFile').onchange = importStudents;
+  mount();
+}
+/** Draw the active tab: the toolbar once (so typing is never interrupted), then the live part. */
+function mount() {
+  if (!$('#tab')) return;
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === F.tab));
+  $('#tab').innerHTML = (VIEW[F.tab].bar?.() || '') + '<div id="dyn"></div>';
+  update();
+}
+let raf = 0;
+function update() { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { const d = $('#dyn'); if (d) d.innerHTML = VIEW[F.tab].body(); }); }
+const opt = (v, label, cur) => `<option value="${esc(v)}" ${String(v) === String(cur) ? 'selected' : ''}>${esc(label)}</option>`;
+const groupOpts = cur => opt('', 'All groups', cur) + [1, 2, 3, 4].map(g => opt(g, `Group ${g} · ${GROUPS[g]}`, cur)).join('');
+const empty = (title, text, btn = '') => `<div class="card empty"><b>${esc(title)}</b>${esc(text)}${btn ? `<div style="margin-top:14px">${btn}</div>` : ''}</div>`;
+
+/* Attendance maths shared by Reports and exports.
+   A student counts as present in a time slot if they were scanned at ANY session in that slot. */
+function attendanceSummary() {
+  const slots = [...new Map(S.sessions.map(s => [slotKey(s), s])).entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  const sesSlot = new Map(S.sessions.map(s => [s.id, slotKey(s)]));
+  const seen = new Map();
+  for (const a of S.att) {
+    const k = sesSlot.get(a.sessionId); if (!k) continue;
+    if (!seen.has(a.studentId)) seen.set(a.studentId, new Map());
+    seen.get(a.studentId).set(k, a);
+  }
+  const rows = S.students.map(st => {
+    const marks = slots.map(([k]) => seen.get(st.id)?.get(k) || null);
+    const n = marks.filter(Boolean).length;
+    return { st, marks, n, pct: slots.length ? Math.round(n / slots.length * 100) : 0 };
+  });
+  return { slots, rows };
+}
+
+const VIEW = {
+  overview: {
+    body() {
+      if (!S.students.length) return empty('Start by importing the students', 'Upload the allocation file to load all students and their groups.', '<button class="btn primary" data-act="goStudents">Go to Students</button>');
+      const today = S.sessions.filter(s => s.date === todayStr());
+      const list = (today.length ? today : S.sessions).slice(0, 16);
+      return `<div class="cards">
+        <div class="card stat"><span>Total students</span><b>${S.students.length}</b></div>
+        ${[1, 2, 3, 4].map(g => `<div class="card stat g${g}"><span>Group ${g} · ${GROUPS[g]}</span><b>${groupCount(g)}</b></div>`).join('')}
+        <div class="card stat"><span>Scans recorded</span><b>${S.att.length}</b><small>${S.sessions.length} sessions</small></div></div>
+        <div class="card sec"><h2>${today.length ? "Today's sessions" : 'Sessions'}</h2>
+        ${list.length ? list.map(s => sessionRow(s)).join('') : '<div class="empty"><b>No sessions yet</b>Create the schedule in the Sessions tab.</div>'}</div>`;
+    },
+  },
+  students: {
+    bar() {
+      const courses = [...new Set(S.students.map(s => s.course))].sort();
+      return `<div class="bar"><input class="grow" type="search" placeholder="Search name or enrolment number" data-f="sq" value="${esc(F.sq)}">
+        <select data-f="sg">${groupOpts(F.sg)}</select>
+        <select data-f="sc">${opt('', 'All courses', F.sc)}${courses.map(c => opt(c, c, F.sc)).join('')}</select>
+        <button class="btn" data-act="exportStudents">Export CSV</button>
+        <button class="btn primary" data-act="pickCSV">Import students</button></div>`;
+    },
+    body() {
+      if (!S.students.length) return empty('No students yet', 'Click “Import students” and choose the file “Huddle 25 allocation with QR codes - ADMIN ONLY.csv”.');
+      const rows = filterStudents();
+      return `<p class="sub">${rows.length} of ${S.students.length} students</p><div class="tw"><table><thead><tr><th>Enrolment no.</th><th>Name</th><th>Course</th><th>Group</th></tr></thead><tbody>
+        ${rows.map(s => `<tr><td class="mono">${esc(s.reg)}</td><td>${esc(s.name)}</td><td>${esc(s.course)}</td><td>${badge(s.group)}</td></tr>`).join('') || '<tr><td colspan="4" class="empty">No students match.</td></tr>'}
+        </tbody></table></div>`;
+    },
+  },
+  sessions: {
+    bar: () => `<div class="bar"><div class="grow sub">One entry per venue and time slot. Each has the group expected there.</div>
+      <button class="btn" data-act="addSession">Add one session</button><button class="btn primary" data-act="genSchedule">Create full schedule</button></div>`,
+    body() {
+      if (!S.sessions.length) return empty('No sessions yet', '“Create full schedule” builds all 16 entries (4 sessions × 4 time slots) with the groups rotating.');
+      let out = '', last = '';
+      for (const s of S.sessions) {
+        if (slotKey(s) !== last) { out += `${last ? '</div>' : ''}<div class="card sec"><h2>${esc(slotLabel(s))}</h2>`; last = slotKey(s); }
+        out += sessionRow(s, true);
+      }
+      return out + '</div>';
+    },
+  },
+  attendance: {
+    bar() {
+      if (!S.sessions.find(s => s.id === F.asid)) F.asid = (S.sessions.find(isLive) || S.sessions[0])?.id || '';
+      return `<div class="bar"><select data-f="asid" class="grow">${S.sessions.map(s => opt(s.id, `${slotLabel(s)} — ${s.title} (${GROUPS[s.group]})`, F.asid)).join('')}</select>
+        <select data-f="af">${opt('all', 'Everyone', F.af)}${opt('present', 'Present', F.af)}${opt('absent', 'Absent', F.af)}</select>
+        <input type="search" placeholder="Search" data-f="aq" value="${esc(F.aq)}"><button class="btn" data-act="exportSession">Export CSV</button></div>`;
+    },
+    body() {
+      const s = S.sessions.find(x => x.id === F.asid);
+      if (!s) return empty('No sessions yet', 'Create sessions first, then attendance appears here live.');
+      const rows = sessionRows(s), present = rows.filter(r => r.a), wrong = present.filter(r => r.a.wrongVenue).length;
+      const expected = groupCount(s.group), q = F.aq.trim().toUpperCase();
+      const shown = rows.filter(r => (F.af === 'all' || (F.af === 'present') === !!r.a) && (!q || r.st.name.includes(q) || r.st.reg.includes(q) || r.st.id.includes(q)));
+      return `<div class="cards"><div class="card stat g${s.group}"><span>Expected · ${GROUPS[s.group]}</span><b>${expected}</b><small>${esc(s.venue)}</small></div>
+        <div class="card stat"><span>Present</span><b>${present.length - wrong}</b><small>${expected ? Math.round((present.length - wrong) / expected * 100) : 0}% of group</small></div>
+        <div class="card stat"><span>Absent</span><b>${expected - (present.length - wrong)}</b></div>
+        <div class="card stat"><span>From other groups</span><b>${wrong}</b><small>recorded at wrong venue</small></div></div>
+        <div class="tw"><table><thead><tr><th>Enrolment no.</th><th>Name</th><th>Group</th><th>Status</th><th>Time</th><th>Recorded by</th><th></th></tr></thead><tbody>
+        ${shown.map(r => `<tr><td class="mono">${esc(r.st.reg)}</td><td>${esc(r.st.name)}</td><td>${badge(r.st.group)}</td>
+          <td>${r.a ? `<span class="chip ok">Present</span>${r.a.wrongVenue ? ' <span class="chip warn">Wrong venue</span>' : ''}${r.a._pending ? ' <span class="chip">saving…</span>' : ''}` : '<span class="chip err">Absent</span>'}</td>
+          <td>${r.a ? fmtTime(r.a.at) : ''}</td><td class="sub">${r.a ? esc(r.a.byName || '') + (r.a.method !== 'qr' ? ` (${esc(r.a.method)})` : '') : ''}</td>
+          <td class="c">${r.a ? `<button class="btn sm" data-act="removeAtt" data-id="${esc(r.st.id)}">Remove</button>` : `<button class="btn sm" data-act="markAtt" data-id="${esc(r.st.id)}">Mark present</button>`}</td></tr>`).join('') || '<tr><td colspan="7" class="empty">Nobody matches.</td></tr>'}
+        </tbody></table></div>`;
+    },
+  },
+  reports: {
+    bar: () => `<div class="bar"><input class="grow" type="search" placeholder="Search name or enrolment number" data-f="rq" value="${esc(F.rq)}">
+      <select data-f="rg">${groupOpts(F.rg)}</select><button class="btn primary" data-act="exportReport">Export CSV</button></div>`,
+    body() {
+      const { slots, rows } = attendanceSummary();
+      if (!slots.length || !rows.length) return empty('Nothing to report yet', 'Attendance percentages appear once students and sessions exist.');
+      const q = F.rq.trim().toUpperCase();
+      const shown = rows.filter(r => (!F.rg || r.st.group === +F.rg) && (!q || r.st.name.includes(q) || r.st.reg.includes(q) || r.st.id.includes(q)));
+      const avg = g => { const l = rows.filter(r => r.st.group === g); return l.length ? Math.round(l.reduce((t, r) => t + r.pct, 0) / l.length) : 0; };
+      return `<div class="cards">${[1, 2, 3, 4].map(g => `<div class="card stat g${g}"><span>Group ${g} · ${GROUPS[g]}</span><b>${avg(g)}%</b><small>average attendance</small></div>`).join('')}</div>
+        <p class="sub">Percentage = time slots attended ÷ ${slots.length} time slot${slots.length > 1 ? 's' : ''} in the schedule. ${shown.length} students shown.</p>
+        <div class="tw"><table><thead><tr><th>Enrolment no.</th><th>Name</th><th>Group</th>${slots.map(([, s]) => `<th class="c">${esc(fmtDay(s.date).split(',')[0])} ${esc(s.start)}</th>`).join('')}<th class="num">Attended</th><th class="num">%</th></tr></thead><tbody>
+        ${shown.map(r => `<tr><td class="mono">${esc(r.st.reg)}</td><td>${esc(r.st.name)}</td><td>${badge(r.st.group)}</td>
+          ${r.marks.map(m => `<td class="c">${m ? (m.wrongVenue ? '<span class="chip warn" title="Recorded at another group\'s venue">✓ other venue</span>' : '<span class="chip ok">✓</span>') : '<span class="chip">—</span>'}</td>`).join('')}
+          <td class="num">${r.n}/${slots.length}</td><td class="num"><b>${r.pct}%</b></td></tr>`).join('') || `<tr><td colspan="${5 + slots.length}" class="empty">No students match.</td></tr>`}
+        </tbody></table></div>`;
+    },
+  },
+  staff: {
+    body() {
+      const link = S.key ? `${location.origin}${location.pathname}#k=${S.key.key}` : '';
+      const active = S.scanners.filter(d => d.key === S.key?.key);
+      return `<div class="card sec"><h2>Scanner link for instructors</h2>
+        <p class="sub">Send this link to the instructors (e.g. WhatsApp). They open it on their phone, type their name, pick their session and scan. No account needed. Anyone with the link can record attendance, so share it only with staff.</p>
+        <div class="linkbox"><input readonly id="staffLink" value="${esc(link)}"><button class="btn primary" data-act="copyLink">Copy link</button></div>
+        <div class="row" style="margin-top:8px"><div class="grow"><b>Scanning is ${S.key?.enabled ? 'ON' : 'OFF'}</b><div class="sub">Turn off to block every scanner at once.</div></div>
+          <button class="btn" data-act="toggleKey">${S.key?.enabled ? 'Turn scanning off' : 'Turn scanning on'}</button>
+          <button class="btn" data-act="rotateKey">Make a new link</button></div></div>
+        <div class="card sec"><h2>Phones using the current link (${active.length})</h2>
+          ${active.length ? active.map(d => `<div class="row"><div class="grow"><b>${esc(d.label)}</b></div><span class="sub">joined ${fmtDateTime(d.createdAt)}</span></div>`).join('') : '<p class="sub">No phone has opened the link yet.</p>'}</div>
+        <div class="card sec"><h2>Change log</h2><p class="sub">Every admin change is recorded here and cannot be edited.</p>
+          ${S.audit.slice(0, 60).map(a => `<div class="row"><div class="grow"><b>${esc(a.action)}</b><div class="sub">${esc(a.detail)}</div></div><span class="sub">${fmtDateTime(a.at)}</span></div>`).join('') || '<p class="sub">Nothing yet.</p>'}</div>
+        <div class="card sec"><h2>Clear test data</h2><p class="sub">Deletes every attendance record (${S.att.length}). Use this after a trial run, before the real event. Students and sessions stay.</p>
+          <button class="btn danger" data-act="clearAtt" ${S.att.length ? '' : 'disabled'}>Delete all attendance records</button></div>`;
+    },
+  },
+};
+function sessionRow(s, manage = false) {
+  const exp = groupCount(s.group), n = attOf(s.id).filter(a => !a.wrongVenue).length;
+  return `<div class="row"><div class="grow"><b>${esc(s.title)}</b> ${isLive(s) ? '<span class="chip live">LIVE</span>' : ''}${s.open ? '' : ' <span class="chip err">Closed</span>'}
+      <div class="sub">${esc(s.venue)}${manage ? '' : ' · ' + esc(slotLabel(s))}</div></div>
+    ${badge(s.group)}<div style="width:150px"><div class="sub"><b>${n}</b> / ${exp} present</div><div class="prog"><i style="width:${exp ? Math.min(100, n / exp * 100) : 0}%"></i></div></div>
+    ${manage ? `<button class="btn sm" data-act="toggleSession" data-id="${esc(s.id)}">${s.open ? 'Close' : 'Open'}</button>
+      <button class="btn sm" data-act="editSession" data-id="${esc(s.id)}">Edit</button><button class="btn sm" data-act="deleteSession" data-id="${esc(s.id)}">Delete</button>` : ''}</div>`;
+}
+function filterStudents() {
+  const q = F.sq.trim().toUpperCase();
+  return S.students.filter(s => (!F.sg || s.group === +F.sg) && (!F.sc || s.course === F.sc) && (!q || s.name.includes(q) || s.reg.includes(q) || s.id.includes(q)));
+}
+/** Everyone expected at a session, plus anyone from another group recorded there. */
+function sessionRows(s) {
+  const recs = new Map(attOf(s.id).map(a => [a.studentId, a])), sm = studentMap();
+  const rows = S.students.filter(st => st.group === s.group).map(st => ({ st, a: recs.get(st.id) || null }));
+  for (const a of recs.values()) { const st = sm.get(a.studentId); if (st && st.group !== s.group) rows.push({ st, a }); }
+  return rows;
+}
+const sessionForm = (s = {}) => `<div class="fg">
+  <label>Session name<input name="title" required maxlength="60" value="${esc(s.title || '')}" placeholder="e.g. Session 1"></label>
+  <label>Venue<input name="venue" required maxlength="60" value="${esc(s.venue || '')}" placeholder="e.g. Main Hall"></label>
+  <label>Date<input name="date" type="date" required value="${esc(s.date || '2026-11-17')}"></label>
+  <label>Group expected<select name="group">${[1, 2, 3, 4].map(g => opt(g, `Group ${g} · ${GROUPS[g]}`, s.group || 1)).join('')}</select></label>
+  <label>Starts<input name="start" type="time" required value="${esc(s.start || '')}"></label>
+  <label>Ends<input name="end" type="time" required value="${esc(s.end || '')}"></label></div>`;
+const checkTimes = v => v.end <= v.start ? 'The end time must be after the start time.' : '';
+
+const ACT = {
+  goStudents() { F.tab = 'students'; mount(); },
+  pickCSV() { $('#csvFile').value = ''; $('#csvFile').click(); },
+  exportStudents() {
+    downloadCSV('huddle25-students.csv', [['Enrolment No.', 'Name', 'Title', 'Course', 'Group No.', 'Group'],
+      ...filterStudents().map(s => [s.reg, s.name, s.title, s.course, s.group, GROUPS[s.group]])]);
+  },
+  async addSession() {
+    const v = await dialog({ title: 'Add a session', body: sessionForm(), ok: 'Add session', validate: checkTimes });
+    if (!v) return;
+    const id = rid(8);
+    await put(`sessions/${id}`, { title: v.title.trim(), venue: v.venue.trim(), date: v.date, start: v.start, end: v.end, group: +v.group, open: true, createdAt: TS() });
+    audit('Session added', `${v.title} · ${v.venue} · ${v.date} ${v.start} · ${GROUPS[+v.group]}`); toast('Session added', 'ok');
+  },
+  async editSession({ id }) {
+    const s = S.sessions.find(x => x.id === id); if (!s) return;
+    const has = attOf(id).length;
+    const v = await dialog({ title: 'Edit session', body: (has ? `<div class="note">This session already has ${has} attendance record(s). Changing the group will not change them.</div>` : '') + sessionForm(s), ok: 'Save changes', validate: checkTimes });
+    if (!v) return;
+    await put(`sessions/${id}`, { title: v.title.trim(), venue: v.venue.trim(), date: v.date, start: v.start, end: v.end, group: +v.group, open: s.open, createdAt: TS() });
+    audit('Session edited', `${s.title} → ${v.title} · ${v.venue} · ${v.date} ${v.start}–${v.end} · ${GROUPS[+v.group]}`);
+  },
+  async toggleSession({ id }) {
+    const s = S.sessions.find(x => x.id === id); if (!s) return;
+    const { id: _, _pending, ...data } = s;
+    await put(`sessions/${id}`, { ...data, createdAt: TS(), open: !s.open });
+    audit(s.open ? 'Session closed' : 'Session opened', `${s.title} · ${slotLabel(s)}`);
+  },
+  async deleteSession({ id }) {
+    const s = S.sessions.find(x => x.id === id); if (!s) return;
+    if (attOf(id).length) return dialog({ title: 'This session has attendance', body: `<p>“${esc(s.title)}” has ${attOf(id).length} attendance record(s), so it cannot be deleted. Close it instead, or remove its records first.</p>`, cancel: null });
+    if (!(await dialog({ title: 'Delete this session?', body: `<p>${esc(s.title)} · ${esc(s.venue)} · ${esc(slotLabel(s))}</p>`, ok: 'Delete', danger: true }))) return;
+    await batch([{ path: `sessions/${id}`, data: null }]); audit('Session deleted', `${s.title} · ${slotLabel(s)}`);
+  },
+  async genSchedule() {
+    const n = [1, 2, 3, 4];
+    const v = await dialog({
+      title: 'Create full schedule', wide: true, ok: 'Preview',
+      body: `<p class="sub">Four sessions run at the same time in four venues. In each time slot every group goes to a different session, and the groups rotate so each group attends every session once.</p>
+        <h4>The four sessions</h4><div class="fg">${n.map(i => `<label>Session ${i} name<input name="t${i}" required value="Session ${i}"></label><label>Session ${i} venue<input name="v${i}" required placeholder="Venue"></label>`).join('')}</div>
+        <h4>The four time slots</h4>${n.map(i => `<div class="fg" style="grid-template-columns:1.4fr 1fr 1fr;margin-bottom:8px"><label>Slot ${i} date<input type="date" name="d${i}" required value="2026-11-${i < 3 ? 17 : 18}"></label>
+          <label>Starts<input type="time" name="s${i}" required value="${i % 2 ? '09:00' : '13:30'}"></label><label>Ends<input type="time" name="e${i}" required value="${i % 2 ? '12:00' : '16:30'}"></label></div>`).join('')}`,
+      validate: v => n.some(i => v['e' + i] <= v['s' + i]) ? 'Each slot must end after it starts.' : new Set(n.map(i => v['d' + i] + v['s' + i])).size < 4 ? 'Two slots have the same date and start time.' : '',
+    });
+    if (!v) return;
+    // Slot 1: Session 1→Group 1, Session 2→Group 2 …; each later slot every group moves on one session.
+    const list = [];
+    n.forEach(sl => n.forEach(a => list.push({ title: v['t' + a].trim(), venue: v['v' + a].trim(), date: v['d' + sl], start: v['s' + sl], end: v['e' + sl], group: ((a - sl) % 4 + 4) % 4 + 1, open: true })));
+    const okd = await dialog({
+      title: 'Check the rotation', wide: true, ok: 'Create 16 sessions',
+      body: `${S.sessions.length ? `<div class="note">You already have ${S.sessions.length} session(s). These 16 will be added to them.</div>` : ''}
+        <div class="grid4"><span></span>${n.map(a => `<b>${esc(v['t' + a])}<br><span class="sub">${esc(v['v' + a])}</span></b>`).join('')}
+        ${n.map(sl => `<span><b>${esc(fmtDay(v['d' + sl]))}</b><br>${esc(v['s' + sl])}–${esc(v['e' + sl])}</span>` + n.map(a => badge(((a - sl) % 4 + 4) % 4 + 1)).join('')).join('')}</div>`,
+    });
+    if (!okd) return;
+    await batch(list.map(s => ({ path: `sessions/${rid(8)}`, data: { ...s, createdAt: TS() } })));
+    audit('Schedule created', '16 sessions with rotating groups'); toast('16 sessions created', 'ok');
+  },
+  async markAtt({ id }) {
+    const s = S.sessions.find(x => x.id === F.asid), st = studentMap().get(id); if (!s || !st) return;
+    const v = await dialog({ title: 'Mark present', body: `<p><b>${esc(st.reg)}</b> ${esc(st.name)}<br><span class="sub">${esc(s.title)} · ${esc(slotLabel(s))}</span></p><label class="fl">Reason (kept in the change log)<input name="why" required maxlength="120" placeholder="e.g. phone battery dead, verified by ID"></label>`, ok: 'Mark present' });
+    if (!v) return;
+    await put(`attendance/${s.id}_${st.id}`, { sessionId: s.id, studentId: st.id, group: st.group, wrongVenue: st.group !== s.group, method: 'admin', by: S.user.uid, byName: 'Admin', note: v.why, at: TS() });
+    audit('Attendance added by admin', `${st.reg} ${st.name} · ${s.title} ${slotLabel(s)} · ${v.why}`);
+  },
+  async removeAtt({ id }) {
+    const s = S.sessions.find(x => x.id === F.asid), st = studentMap().get(id), a = attOf(F.asid).find(x => x.studentId === id); if (!s || !st || !a) return;
+    const v = await dialog({ title: 'Remove this attendance record?', danger: true, ok: 'Remove record', body: `<p><b>${esc(st.reg)}</b> ${esc(st.name)}<br><span class="sub">${esc(s.title)} · recorded ${fmtDateTime(a.at)} by ${esc(a.byName || '?')}</span></p><label class="fl">Reason (kept in the change log)<input name="why" required maxlength="120"></label>` });
+    if (!v) return;
+    await batch([{ path: `attendance/${a.id}`, data: null }]);
+    audit('Attendance removed by admin', `${st.reg} ${st.name} · ${s.title} ${slotLabel(s)} · was recorded ${fmtDateTime(a.at)} by ${a.byName || '?'} (${a.method}) · ${v.why}`);
+  },
+  exportSession() {
+    const s = S.sessions.find(x => x.id === F.asid); if (!s) return;
+    downloadCSV(`huddle25-${s.date}-${s.start.replace(':', '')}-${s.title.replace(/[^\w]+/g, '-')}.csv`,
+      [['Session', 'Venue', 'Date', 'Time', 'Enrolment No.', 'Name', 'Group', 'Status', 'Wrong venue', 'Scan time', 'Recorded by', 'Method'],
+        ...sessionRows(s).map(r => [s.title, s.venue, s.date, `${s.start}-${s.end}`, r.st.reg, r.st.name, GROUPS[r.st.group], r.a ? 'Present' : 'Absent', r.a?.wrongVenue ? 'Yes' : '', r.a ? new Date(r.a.at).toLocaleString() : '', r.a?.byName || '', r.a?.method || ''])]);
+  },
+  exportReport() {
+    const { slots, rows } = attendanceSummary();
+    downloadCSV('huddle25-attendance-summary.csv', [['Enrolment No.', 'Name', 'Course', 'Group', ...slots.map(([, s]) => `${s.date} ${s.start}`), 'Attended', 'Slots', 'Percentage'],
+      ...rows.filter(r => !F.rg || r.st.group === +F.rg).map(r => [r.st.reg, r.st.name, r.st.course, GROUPS[r.st.group], ...r.marks.map(m => m ? (m.wrongVenue ? 'Present (other venue)' : 'Present') : 'Absent'), r.n, slots.length, r.pct + '%'])]);
+  },
+  copyLink() { const i = $('#staffLink'); i.select(); navigator.clipboard?.writeText(i.value).then(() => toast('Link copied', 'ok'), () => document.execCommand('copy')); },
+  async toggleKey() { await put('private/scannerKey', { key: S.key.key, enabled: !S.key.enabled }); audit(S.key.enabled ? 'Scanning turned off' : 'Scanning turned on', ''); },
+  async rotateKey() {
+    if (!(await dialog({ title: 'Make a new scanner link?', danger: true, ok: 'Make new link', body: '<p>The current link stops working on every phone straight away. You will need to send the new link to all instructors.</p>' }))) return;
+    await put('private/scannerKey', { key: rid(24), enabled: true }); audit('New scanner link made', 'Old link disabled'); toast('New link ready – share it again', 'ok');
+  },
+  async clearAtt() {
+    const v = await dialog({ title: 'Delete ALL attendance records?', danger: true, ok: 'Delete everything', body: `<p>This removes all ${S.att.length} records and cannot be undone. Do this only to clear a trial run.</p><label class="fl">Type DELETE to confirm<input name="c" autocomplete="off"></label>`, validate: v => v.c === 'DELETE' ? '' : 'Type DELETE in capitals to confirm.' });
+    if (!v) return;
+    const n = S.att.length;
+    await batch(S.att.map(a => ({ path: `attendance/${a.id}`, data: null }))); audit('All attendance deleted', `${n} records (test data cleared)`); toast(`${n} records deleted`, 'ok');
+  },
+};
+
+/** Read, validate, preview and (after confirmation) save the student list. Nothing is dropped silently. */
+async function importStudents(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const rows = parseCSV(await file.text());
+  const head = (rows.shift() || []).map(h => h.trim().toLowerCase());
+  const col = n => head.indexOf(n), need = ['enrolment_no', 'name', 'group_no', 'qr_token'];
+  const missing = need.filter(n => col(n) < 0);
+  if (missing.length) return dialog({ title: 'This is not the allocation file', cancel: null, body: `<p>Missing column(s): <b>${esc(missing.join(', '))}</b>.</p><p class="sub">Choose “Huddle 25 allocation with QR codes - ADMIN ONLY.csv”.</p>` });
+  const errs = [], students = [], regs = new Set(), toks = new Set();
+  rows.forEach((r, i) => {
+    const g = k => (r[col(k)] ?? '').trim(), ln = i + 2;
+    const st = { id: g('enrolment_no').replace(/[^A-Za-z0-9]/g, '').toUpperCase(), reg: g('enrolment_no'), name: g('name').toUpperCase(), title: col('title') < 0 ? '' : g('title'), course: col('course') < 0 ? '' : g('course'), group: +g('group_no'), token: g('qr_token') };
+    if (!/^S\/\d\d\/\d{3}$/.test(st.reg)) errs.push(`Row ${ln}: enrolment number “${st.reg}” is not in the form S/25/001`);
+    else if (regs.has(st.id)) errs.push(`Row ${ln}: enrolment number ${st.reg} appears twice`);
+    if (!st.name) errs.push(`Row ${ln}: missing name`);
+    if (![1, 2, 3, 4].includes(st.group)) errs.push(`Row ${ln}: group must be 1–4`);
+    if (!/^H25-[0-9A-F]{12}$/.test(st.token)) errs.push(`Row ${ln}: QR code value is missing or malformed`);
+    else if (toks.has(st.token)) errs.push(`Row ${ln}: QR code value is used twice`);
+    regs.add(st.id); toks.add(st.token); students.push(st);
+  });
+  if (errs.length || !students.length) return dialog({ title: `Import stopped – ${errs.length || 1} problem(s)`, cancel: null, body: `<p>Nothing was saved. Fix the file and import again.</p><div class="note err">${(errs.length ? errs.slice(0, 12) : ['The file has no students.']).map(esc).join('<br>')}${errs.length > 12 ? `<br>…and ${errs.length - 12} more` : ''}</div>` });
+  const cnt = g => students.filter(s => s.group === g).length;
+  const okd = await dialog({
+    title: `Import ${students.length} students?`, ok: S.students.length ? 'Replace student list' : 'Save students', danger: !!S.students.length,
+    body: `<div class="cards" style="grid-template-columns:repeat(4,1fr)">${[1, 2, 3, 4].map(g => `<div class="card stat g${g}"><span>${GROUPS[g]}</span><b>${cnt(g)}</b></div>`).join('')}</div>
+      <p class="sub">No problems found in ${esc(file.name)}.</p>
+      ${S.students.length ? `<div class="note ${S.att.length ? 'err' : ''}">This replaces the current list of ${S.students.length} students.${S.att.length ? ` <b>${S.att.length} attendance records already exist</b> – only continue if the enrolment numbers are unchanged.` : ''}</div>` : ''}`,
+  });
+  if (!okd) return;
+  await put('roster/main', { students, ids: students.map(s => s.id), count: students.length, updatedAt: TS() });
+  audit('Students imported', `${students.length} students from ${file.name}`); toast(`${students.length} students saved`, 'ok');
+}
+
+/* ═════════════════════════════ SCANNER ═════════════════════════════ */
+const Q = { uid: null, label: '', students: [], tok: new Map(), ids: new Map(), sessions: [], sid: null, att: new Map(), unsubAtt: null, cam: null, last: { x: '', t: 0 }, audio: null, view: '', wrong: null };
+try { Q.label = localStorage.getItem('h25_name') || ''; } catch (e) { /* private mode */ }
+const curSession = () => Q.sessions.find(s => s.id === Q.sid);
+const fatal = (title, text) => { stopCam(); Q.view = 'fatal'; root.innerHTML = `<div class="center"><div class="panel">${brand('Scanner')}<h3 style="margin:14px 0 6px">${esc(title)}</h3><p>${esc(text)}</p><button class="btn big" onclick="location.reload()">Try again</button></div></div>`; };
+
+function scanBoot() {
+  root.innerHTML = `<div class="center"><div class="panel">${brand('Scanner')}<p>Connecting…</p></div></div>`;
+  onAuthStateChanged(auth, u => {
+    if (!u) return void signInAnonymously(auth).catch(e => fatal('Cannot connect', e.message));
+    Q.uid = u.uid; Q.label ? register() : askName();
+  });
+}
+function askName() {
+  root.innerHTML = `<div class="center"><form class="panel" id="nameForm">${brand('Scanner')}<p>Your name, so the admin can see who scanned.</p>
+    <input name="n" required maxlength="40" placeholder="Your name" autocomplete="name"><button class="btn primary big">Continue</button></form></div>`;
+  $('#nameForm').onsubmit = e => { e.preventDefault(); Q.label = e.target.n.value.trim().slice(0, 40); if (!Q.label) return; try { localStorage.setItem('h25_name', Q.label); } catch (x) { /* ignore */ } register(); };
+}
+async function register() {
+  try {
+    await put(`scanners/${Q.uid}`, { key: KEY, label: Q.label, createdAt: TS() });
+    const r = await getOnce('roster/main');
+    if (!r?.students?.length) return fatal('Not ready yet', 'The student list has not been loaded by the admin.');
+    Q.students = r.students; Q.tok = new Map(r.students.map(s => [s.token, s])); Q.ids = new Map(r.students.map(s => [s.id, s]));
+    watchCol('sessions', l => {
+      Q.sessions = bySlot(l);
+      if (Q.view === 'scan' && !curSession()) { toast('This session was removed', 'err'); showSessions(); }
+      else if (Q.view !== 'scan') showSessions();
+    }, e => fatal('Connection lost', scanErr(e)));
+  } catch (e) { fatal(e.code === 'permission-denied' ? 'This scanner link no longer works' : 'Cannot connect', scanErr(e)); }
+}
+const scanErr = e => e.code === 'permission-denied' ? 'Ask the Huddle 25 admin for the current scanner link.' : (e.message || 'Check your internet connection.');
+
+function showSessions() {
+  stopCam(); Q.unsubAtt?.(); Q.unsubAtt = null; Q.sid = null; Q.view = 'sessions';
+  const today = Q.sessions.filter(s => s.date === todayStr()), other = Q.sessions.filter(s => s.date !== todayStr());
+  const card = s => `<button class="ses g${s.group} ${s.open ? '' : 'closed'}" data-sid="${esc(s.id)}"><div class="grow"><b>${esc(s.title)}</b><span class="sub">${esc(s.venue)} · ${esc(s.start)}–${esc(s.end)}</span></div>
+    ${isLive(s) ? '<span class="chip live">NOW</span>' : ''}${s.open ? '' : '<span class="chip err">Closed</span>'}${badge(s.group)}</button>`;
+  root.innerHTML = `<div class="sc"><div class="sc-top">${brand('Scanner · ' + Q.label)}<button class="btn sm" id="rename">Change name</button></div>
+    <div class="sc-list">${Q.sessions.length ? '' : '<div class="empty"><b>No sessions yet</b>The admin has not created the sessions.</div>'}
+    ${today.length ? '<h3>Today – choose your session</h3>' + today.map(card).join('') : ''}
+    ${other.length ? `<h3>${today.length ? 'Other days' : 'Choose your session'}</h3>` + other.map(s => card(s).replace('<span class="sub">', `<span class="sub">${esc(fmtDay(s.date))} · `)).join('') : ''}</div></div>`;
+  $('#rename').onclick = askName;
+  $('.sc-list').onclick = e => { const b = e.target.closest('[data-sid]'); if (b) openSession(b.dataset.sid); };
+}
+function openSession(sid) {
+  Q.sid = sid; Q.view = 'scan'; Q.att = new Map(); Q.last = { x: '', t: 0 };
+  const s = curSession(), exp = Q.students.filter(x => x.group === s.group).length;
+  try { Q.audio = Q.audio || new (window.AudioContext || window.webkitAudioContext)(); Q.audio.resume(); } catch (e) { /* no sound */ }
+  navigator.wakeLock?.request('screen').catch(() => {});
+  root.innerHTML = `<div class="sc"><div class="sc-head g${s.group}"><button id="back">‹ Sessions</button><div class="grow"><b>${esc(s.title)}</b><small>${esc(s.venue)} · ${esc(s.start)}–${esc(s.end)}</small></div><span class="tag">${GROUPS[s.group].toUpperCase()}</span></div>
+    <div class="cam"><video id="vid" playsinline muted></video><div class="msg" id="camMsg">Starting camera…</div></div>
+    <div class="res" id="res"><div class="ico">📷</div><div class="grow">Point the camera at a student's QR code</div></div>
+    <div class="sc-stats"><span><b id="cnt">0</b> / ${exp} present</span><span id="sync"></span></div>
+    <form class="manual" id="manual"><input name="r" inputmode="text" autocomplete="off" placeholder="No QR? Type number, e.g. 25/001"><button class="btn">Add</button></form>
+    <div class="recent" id="recent"></div></div>`;
+  $('#back').onclick = showSessions;
+  $('#manual').onsubmit = e => { e.preventDefault(); const v = e.target.r.value; if (v.trim()) { onCode(normReg(v), 'manual'); e.target.r.value = ''; e.target.r.blur(); } };
+  $('#res').onclick = e => { const a = e.target.dataset.go; if (a === 'yes' && Q.wrong) record(Q.wrong.st, true, Q.wrong.method); else if (a === 'no') idle(); };
+  Q.unsubAtt = watchCol('attendance', l => { Q.att = new Map(l.map(a => [a.studentId, a])); drawCounts(); }, e => toast(scanErr(e), 'err'), ['sessionId', '==', sid]);
+  startCam();
+}
+function normReg(v) { // "25/001", "s25001", "S/25/001", "1" → "S25001"
+  let x = v.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (/^\d{1,3}$/.test(x)) x = 'S25' + x.padStart(3, '0'); else if (/^\d{5}$/.test(x)) x = 'S' + x;
+  return x;
+}
+async function startCam() {
+  try {
+    Q.cam = new QrScanner($('#vid'), r => onCode(r.data, 'qr'), {
+      returnDetailedScanResult: true, preferredCamera: 'environment', maxScansPerSecond: 15, highlightScanRegion: true, highlightCodeOutline: true,
+      calculateScanRegion: v => { const s = Math.round(Math.min(v.videoWidth, v.videoHeight) * 0.9); return { x: Math.round((v.videoWidth - s) / 2), y: Math.round((v.videoHeight - s) / 2), width: s, height: s, downScaledWidth: 480, downScaledHeight: 480 }; },
+    });
+    await Q.cam.start(); $('#camMsg')?.remove();
+  } catch (e) { const m = $('#camMsg'); if (m) m.textContent = 'Camera not available. Allow camera access for this page in your browser, then reload. You can still type enrolment numbers below.'; }
+}
+function stopCam() { try { Q.cam?.stop(); Q.cam?.destroy(); } catch (e) { /* ignore */ } Q.cam = null; }
+document.addEventListener('visibilitychange', () => { if (MODE === 'scan' && Q.view === 'scan' && !document.hidden) { navigator.wakeLock?.request('screen').catch(() => {}); Q.cam?.start().catch(() => {}); } });
+
+/** Every scan or typed number arrives here. Checked on the phone first so the answer is instant. */
+function onCode(text, method) {
+  text = String(text).trim(); const now = Date.now(), s = curSession();
+  if (!s || Q.view !== 'scan') return;
+  if (method === 'qr') { // the same code held in front of the camera counts once
+    const same = text === Q.last.x && now - Q.last.t < 3000; Q.last = { x: text, t: now }; if (same) return;
+  }
+  const st = method === 'qr' ? Q.tok.get(text) : Q.ids.get(text);
+  if (!st) return show('bad', '✕', method === 'qr' ? 'Not a Huddle 25 code' : 'Not found', method === 'qr' ? 'This QR is not registered for Huddle 25' : `No student with number ${text}`), fb('err');
+  if (!s.open) return show('bad', '🔒', 'Session closed', 'The admin has closed this session'), fb('err');
+  const prev = Q.att.get(st.id);
+  if (prev) return show('dup', '!', st.reg, st.name, `Already scanned at ${fmtTime(prev.at)}${prev.byName ? ' by ' + prev.byName : ''}`), fb('warn');
+  if (st.group !== s.group) {
+    const right = Q.sessions.find(x => x.date === s.date && x.start === s.start && x.group === st.group);
+    Q.wrong = { st, method };
+    show('wrong', '⇄', st.reg, st.name, `Wrong venue – ${GROUPS[st.group]} group${right ? ` should be at ${right.title}, ${right.venue}` : ''}`, '<div class="acts"><button class="btn sm" data-go="yes">Record anyway</button><button class="btn sm" data-go="no">Dismiss</button></div>');
+    return fb('err');
+  }
+  record(st, false, method);
+}
+function record(st, wrongVenue, method) {
+  const s = curSession(); Q.wrong = null; if (!s) return;
+  put(`attendance/${s.id}_${st.id}`, { sessionId: s.id, studentId: st.id, group: st.group, wrongVenue, method, by: Q.uid, byName: Q.label, at: TS() })
+    .catch(e => { // rejected by the server: someone else recorded this student a moment ago, or the session/link was closed
+      toast(e.code === 'permission-denied' ? `${st.reg} was not saved – already recorded on another phone, or scanning is closed.` : `${st.reg} not saved: ${e.message}`, 'err'); fb('err');
+    });
+  show(`ok g${st.group}`, '✓', st.reg, st.name, `${GROUPS[st.group]} group · recorded ${fmtTime(Date.now())}${wrongVenue ? ' · wrong venue' : ''}`); fb('ok');
+}
+let resTimer = 0;
+function show(cls, ico, big, name, why = '', extra = '') {
+  const r = $('#res'); if (!r) return;
+  r.className = 'res ' + cls;
+  r.innerHTML = `<div class="ico">${ico}</div><div class="grow"><div class="big">${esc(big)}</div><div class="nm">${esc(name)}</div>${why ? `<div class="why">${esc(why)}</div>` : ''}${extra}</div>`;
+  clearTimeout(resTimer); if (!cls.startsWith('wrong')) resTimer = setTimeout(idle, 6000);
+}
+function idle() { Q.wrong = null; const r = $('#res'); if (r) { r.className = 'res'; r.innerHTML = '<div class="ico">📷</div><div class="grow">Ready for the next student</div>'; } }
+function fb(kind) { // sound + vibration so the instructor need not look at the screen
+  navigator.vibrate?.(kind === 'ok' ? 60 : [90, 60, 90]);
+  const ctx = Q.audio; if (!ctx) return;
+  const tone = (f, t0, d) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.value = f; g.gain.value = 0.15; o.start(ctx.currentTime + t0); o.stop(ctx.currentTime + t0 + d); };
+  if (kind === 'ok') tone(1040, 0, 0.11); else if (kind === 'warn') { tone(520, 0, 0.12); tone(520, 0.18, 0.12); } else tone(220, 0, 0.35);
+}
+function drawCounts() {
+  if (Q.view !== 'scan') return;
+  const s = curSession(), list = [...Q.att.values()].sort((a, b) => b.at - a.at), pend = list.filter(a => a._pending).length;
+  $('#cnt').textContent = list.filter(a => !a.wrongVenue).length;
+  $('#sync').innerHTML = pend ? `<span class="chip warn">${pend} waiting to save…</span>` : '<span class="chip ok">✓ all saved</span>';
+  $('#recent').innerHTML = list.slice(0, 15).map(a => { const st = Q.ids.get(a.studentId); return `<div class="row"><div class="grow"><b class="mono">${esc(st?.reg || a.studentId)}</b> <span class="sub">${esc(st?.name || '')}</span></div>${a.wrongVenue ? '<span class="chip warn">wrong venue</span>' : ''}<span class="sub">${fmtTime(a.at)}${a.by !== Q.uid && a.byName ? ' · ' + esc(a.byName) : ''}</span></div>`; }).join('');
+}
+
+/* ───────────────────────── Start ───────────────────────── */
+window.__h25ready = true;
+MODE === 'scan' ? scanBoot() : adminBoot();
+
+</script>
+</body>
+</html>
